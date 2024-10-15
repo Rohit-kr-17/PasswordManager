@@ -1,7 +1,14 @@
-import express from 'express';
-import { SignUpController } from '../controller/user.controller';
+import express from "express";
+import {
+    check,
+  SignInController,
+  SignUpController,
+} from "../controller/user.controller";
+import { isAuth } from "../middleware/auth";
 const router = express.Router();
 
-router.get("/",SignUpController);
+router.post("/signUp", SignUpController);
+router.post("/signIn", SignInController);
+router.get("/check",isAuth,check)
 
-export default router
+export default router;
