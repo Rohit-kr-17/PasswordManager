@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Box } from "../Components/Box";
 import Input from "../Components/Input";
+import Button from "../Components/Button";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({
@@ -14,24 +15,30 @@ const SignIn = () => {
       ...prevData,
       [name]: value, // Update the specific input field
     }));
+    console.log(formData);
+  };
+
+  const handleClick = () => {
+    console.log("Hello world");
   };
   return (
     <div className="pt-[50px]">
-      <Box>
+      <Box heading="Sign In">
         <Input
-          name="Username"
-          label="Username"
+          name="Email"
+          label="Email"
           type="text"
-          placeholder="Username"
+          placeholder="Email"
           onChange={handleChange}
         />
-        <Input name="Email" label="Email" type="text" placeholder="Email" />
         <Input
           name="Password"
           label="Password"
           type="Password"
           placeholder="Password"
+          onChange={handleChange}
         />
+        <Button onClick={handleClick} tag="Submit" />
       </Box>
     </div>
   );
