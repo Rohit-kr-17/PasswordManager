@@ -13,7 +13,7 @@ const SignIn = () => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value, // Update the specific input field
+      [name]: value,
     }));
     console.log(formData);
   };
