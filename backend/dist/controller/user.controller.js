@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.check = exports.SignInController = exports.SignUpController = void 0;
+exports.SignInController = exports.SignUpController = void 0;
 const db_1 = require("../db/db");
 const argon2 = __importStar(require("argon2"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -44,7 +44,7 @@ const SignUpController = (req, res) => __awaiter(void 0, void 0, void 0, functio
     try {
         const { email, password, name } = req.body;
         const hash = yield argon2.hash(password);
-        const newUser = yield db_1.prisma.user.create({
+        yield db_1.prisma.user.create({
             data: {
                 email: email,
                 name: name,
@@ -82,7 +82,7 @@ const SignInController = (req, res) => __awaiter(void 0, void 0, void 0, functio
             res.cookie("token", token);
             res
                 .status(200)
-                .json({ message: "User Logged In successfully", token: token });
+                .json({ message: "User Logged In successfully", id: user.id, email: user.email, secreKey: user.uuid, token: token });
             return;
         }
         res.status(404).json({ message: "Invalid Credentials" });
@@ -95,7 +95,3 @@ const SignInController = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.SignInController = SignInController;
-const check = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.json("hee hee haa haa");
-});
-exports.check = check;

@@ -15,7 +15,7 @@ export const PasswordComponent = () => {
   const [password, setPassword] = useState("Password");
 
   const handleVisiblity = () => {
-    SetToggleVisiblity(!toggleVisiblity);
+    SetToggleVisiblity(!toggleVisiblity);0
   };
 
   const handleBorder = () => {

@@ -1,6 +1,5 @@
 import express from "express";
 import {
-    check,
   SignInController,
   SignUpController,
 } from "../controller/user.controller";
@@ -9,6 +8,5 @@ const router = express.Router();
 
 router.post("/signUp", SignUpController);
 router.post("/signIn", SignInController);
-router.get("/check",isAuth,check)
 
 export default router;

@@ -2,24 +2,48 @@ import { useState } from "react";
 import { Box } from "../Components/Box";
 import Input from "../Components/Input";
 import Button from "../Components/Button";
+import axios from "axios";
+import { Password } from "@mui/icons-material";
+import { useRecoilState } from "recoil";
+import { authenticated } from "../StateManagement/Atom";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({
-    Username: "",
     Email: "",
     Password: "",
   });
+  const [auth,setAuth] = useRecoilState(authenticated)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
-    console.log(formData);
   };
 
-  const handleClick = () => {
-    console.log("Hello world");
+  const handleClick = async () => {
+    const response= await axios.post(
+      "http://localhost:8000/api/user/signIn",
+      {
+        email: formData.Email,
+        password: formData.Password,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true
+      },
+    
+    );
+    if(response.status==200){
+      setAuth(true)
+    }else{
+      setAuth(false)
+
+    }
+    console.log(response);
+
   };
   return (
     <div className="pt-[50px]">

@@ -14,7 +14,7 @@ const SignUp = () => {
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
-    }));
+    }));  
   };
   const handleClick = () => {
     console.log(formData);
