@@ -8,14 +8,30 @@ import { ExpandMore } from "@mui/icons-material";
 import Button from "./Button";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useState } from "react";
+interface PasswordComponentProps {
+  id: number;
+  title: string;
+  content: string;
+  file?: string;
+  sharedAt?: string;
+  createdAt: Date;
+}
 
-export const PasswordComponent = () => {
+export const PasswordComponent: React.FC<PasswordComponentProps> = ({
+  id,
+  title,
+  content,
+  file,
+  sharedAt,
+  createdAt,
+}) => {
   const [toggleBorder, setToggleBorder] = useState(false);
   const [toggleVisiblity, SetToggleVisiblity] = useState(false);
-  const [password, setPassword] = useState("Password");
+  const [password, setPassword] = useState(content);
 
   const handleVisiblity = () => {
-    SetToggleVisiblity(!toggleVisiblity);0
+    SetToggleVisiblity(!toggleVisiblity);
+    0;
   };
 
   const handleBorder = () => {
@@ -23,14 +39,14 @@ export const PasswordComponent = () => {
   };
   onclick;
   return (
-    <div className="">
+    <div className="m-5">
       <Accordion className="w-[300px] sm:w-[720px]">
         <AccordionSummary
           expandIcon={<ExpandMore />}
           aria-controls="panel1-content"
           id="panel1-header"
         >
-          Accordion 1
+          {title}
         </AccordionSummary>
         <AccordionDetails>
           <div

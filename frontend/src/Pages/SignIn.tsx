@@ -1,18 +1,28 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box } from "../Components/Box";
 import Input from "../Components/Input";
 import Button from "../Components/Button";
 import axios from "axios";
 import { Password } from "@mui/icons-material";
-import { useRecoilState } from "recoil";
-import { authenticated } from "../StateManagement/Atom";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { authenticated, userAtom } from "../StateManagement/Atom";
+import { replace, useNavigate } from "react-router-dom";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({
     Email: "",
     Password: "",
   });
-  const [auth,setAuth] = useRecoilState(authenticated)
+  const setUser = useSetRecoilState(userAtom);
+  const [auth, setAuth] = useRecoilState(authenticated);
+  const navigate = useNavigate();
+  useEffect(() => {
+    console.log("hello", auth);
+    if (auth) {
+      navigate("/passwords", { replace: true });
+      return;
+    }
+  }, [auth, navigate]);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -22,7 +32,11 @@ const SignIn = () => {
   };
 
   const handleClick = async () => {
-    const response= await axios.post(
+    if (auth) {
+      navigate("/passwords", { replace: true });
+      return;
+    }
+    const response = await axios.post(
       "http://localhost:8000/api/user/signIn",
       {
         email: formData.Email,
@@ -32,18 +46,20 @@ const SignIn = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true
-      },
-    
+        withCredentials: true,
+      }
     );
-    if(response.status==200){
-      setAuth(true)
-    }else{
-      setAuth(false)
-
+    if (response.status == 200) {
+      setAuth(true);
+      const { email, id, name, uuid } = response.data;
+      setUser({ email, name, id, uuid });
+      navigate("/passwords", { replace: true });
+      return;
+    } else {
+      setAuth(false);
+      navigate("/sign-in");
+      return;
     }
-    console.log(response);
-
   };
   return (
     <div className="pt-[50px]">

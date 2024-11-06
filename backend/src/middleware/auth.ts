@@ -34,6 +34,7 @@ const isAuth = async (req: Request, res: Response, next: NextFunction) => {
       id: user.id,
       email: user.email,
       name: user.name,
+      uuid: user.uuid,
     };
     next();
   } catch (err) {

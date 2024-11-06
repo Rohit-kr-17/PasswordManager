@@ -44,6 +44,7 @@ const isAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
             id: user.id,
             email: user.email,
             name: user.name,
+            uuid: user.uuid,
         };
         next();
     }

@@ -8,7 +8,7 @@ const getAll = async (req: Request, res: Response) => {
         ownerId: id,
       },
     });
-    res.json(contents);
+    res.status(200).json(contents);
     // const user = req.user;
   } catch (err) {
     throw "Internal server error";
