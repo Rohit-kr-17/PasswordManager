@@ -1,4 +1,4 @@
-import { NavLink, redirect, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { authenticated, userAtom } from "../StateManagement/Atom";
 
@@ -12,7 +12,7 @@ export const Header = () => {
     navigate("/sign-in");
   };
   return (
-    <div className="w-screen h-10 fixed bg-[#3D52A0] text-white md:pl-[50px] md:pr-[50px] flex items-center justify-between z-10">
+    <div className="w-screen h-10 fixed bg-[#3D52A0] text-white pl-[50px] pr-[50px] flex items-center justify-between z-10">
       <div>
         {auth ? (
           <NavLink
@@ -40,6 +40,7 @@ export const Header = () => {
             >
               Profile
             </NavLink>
+
             <button onClick={handleLogout} className="text-white">
               Logout
             </button>

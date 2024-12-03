@@ -19,7 +19,7 @@ const getAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 ownerId: id,
             },
         });
-        res.json(contents);
+        res.status(200).json(contents);
         // const user = req.user;
     }
     catch (err) {

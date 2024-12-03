@@ -3,10 +3,10 @@ import { Box } from "../Components/Box";
 import Input from "../Components/Input";
 import Button from "../Components/Button";
 import axios from "axios";
-import { Password } from "@mui/icons-material";
+const apiUrl = import.meta.env.VITE_API_URL;
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { authenticated, userAtom } from "../StateManagement/Atom";
-import { replace, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({
@@ -37,7 +37,7 @@ const SignIn = () => {
       return;
     }
     const response = await axios.post(
-      "http://localhost:8000/api/user/signIn",
+      apiUrl + "user/signIn",
       {
         email: formData.Email,
         password: formData.Password,

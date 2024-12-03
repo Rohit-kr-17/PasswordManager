@@ -1,10 +1,9 @@
 import { useRecoilValue } from "recoil";
-import { authenticated, userAtom } from "../StateManagement/Atom";
+import { userAtom } from "../StateManagement/Atom";
 import { useRef } from "react";
 
 const Profile = () => {
   const user = useRecoilValue(userAtom);
-  const auth = useRecoilValue(authenticated);
   const textRef = useRef<HTMLInputElement>(null);
   const handleCopyClick = () => {
     if (textRef.current) {

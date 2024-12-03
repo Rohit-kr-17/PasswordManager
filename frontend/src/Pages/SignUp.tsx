@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Box } from "../Components/Box";
 import Button from "../Components/Button";
 import Input from "../Components/Input";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { authenticated, userAtom } from "../StateManagement/Atom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ const SignUp = () => {
     try {
       const { Username, Email, Password } = formData;
       const response = await axios.post(
-        "http://localhost:8000/api/user/signUp",
+        apiUrl + "user/signUp",
         {
           name: Username,
           email: Email,

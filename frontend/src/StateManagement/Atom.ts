@@ -22,7 +22,12 @@ export const authenticated = atom<boolean>({
   key: "authenticated",
   default: false,
 });
-  export const passwordsAtom = atom<Password[] | null>({
-    key: "passwordsAtom",
-    default: [],
-  });
+export const passwordsAtom = atom<Password[] | null>({
+  key: "passwordsAtom",
+  default: [],
+});
+
+export const createPassword = atom<boolean>({
+  key:"createPassword",
+  default:false
+})
