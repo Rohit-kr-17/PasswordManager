@@ -89,7 +89,7 @@ const deletePassword = (req, res) => __awaiter(void 0, void 0, void 0, function*
             },
         });
         if (!post) {
-            res.status(404).json({ message: "Invalid request" });
+            res.status(404).json({ message: "Invalid any" });
             return;
         }
         yield db_1.prisma.post.delete({
