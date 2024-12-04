@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { prisma } from "../db/db";
 
-const isAuth = async (req: Request, res: Response, next: NextFunction) => {
+const isAuth = async (req: any, res: Response, next: NextFunction) => {
   try {
     const token = req.cookies.token;
     if (!token) {

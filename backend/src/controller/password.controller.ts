@@ -1,6 +1,6 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { prisma } from "../db/db";
-const getAll = async (req: Request, res: Response) => {
+const getAll = async (req: any, res: Response) => {
   try {
     const id = req.user.id;
     const contents = await prisma.post.findMany({
@@ -15,7 +15,7 @@ const getAll = async (req: Request, res: Response) => {
   }
 };
 
-const createPassword = async (req: Request, res: Response) => {
+const createPassword = async (req: any, res: Response) => {
   try {
     const { title, content } = req.body;
     const newEntry = await prisma.post.create({
@@ -33,7 +33,7 @@ const createPassword = async (req: Request, res: Response) => {
     throw "Internal server error";
   }
 };
-const modifyPassword = async (req: Request, res: Response) => {
+const modifyPassword = async (req: any, res: Response) => {
   try {
     const { id } = req.params;
     const { content, title } = req.body;
@@ -64,7 +64,7 @@ const modifyPassword = async (req: Request, res: Response) => {
   }
 };
 
-const deletePassword = async (req: Request, res: Response) => {
+const deletePassword = async (req: any, res: Response) => {
   try {
     const { id } = req.params;
     const post = await prisma.post.findUnique({
@@ -74,7 +74,7 @@ const deletePassword = async (req: Request, res: Response) => {
       },
     });
     if (!post) {
-      res.status(404).json({ message: "Invalid request" });
+      res.status(404).json({ message: "Invalid any" });
       return;
     }
     await prisma.post.delete({
@@ -89,7 +89,7 @@ const deletePassword = async (req: Request, res: Response) => {
   }
 };
 
-const sharePassword = async (req: Request, res: Response) => {
+const sharePassword = async (req: any, res: Response) => {
   try {
     const { id } = req.params;
     const { uuid } = req.body;

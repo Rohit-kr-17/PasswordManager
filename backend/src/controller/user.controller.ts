@@ -1,10 +1,10 @@
 import { prisma } from "../db/db";
-import { Request, Response } from "express";
+import {  Response } from "express";
 import * as argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 
-const SignUpController = async (req: Request, res: Response) => {
+const SignUpController = async (req: any, res: Response) => {
   try {
     const { email, password, name } = req.body;
     const user = await prisma.user.findUnique({
@@ -45,7 +45,7 @@ const SignUpController = async (req: Request, res: Response) => {
   }
 };
 
-const SignInController = async (req: Request, res: Response): Promise<void> => {
+const SignInController = async (req: any, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -87,7 +87,7 @@ const SignInController = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-const isAuthenticated = (req: Request, res: Response) => {
+const isAuthenticated = (req: any, res: Response) => {
   try {
     const { user } = req;
     res.status(200).send(user);
