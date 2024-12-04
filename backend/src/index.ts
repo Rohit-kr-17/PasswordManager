@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
   credentials: true,
-  origin: "https://pm17.netlify.app/"
+  origin: "http://localhost:5173"
 }))
 
 app.use("/api/user/", userRouter);
