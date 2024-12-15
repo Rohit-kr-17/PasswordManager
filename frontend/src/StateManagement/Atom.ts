@@ -28,6 +28,11 @@ export const passwordsAtom = atom<Password[] | null>({
 });
 
 export const createPassword = atom<boolean>({
-  key:"createPassword",
-  default:false
-})
+  key: "createPassword",
+  default: false,
+});
+
+export const Loading = atom<boolean>({
+  key: "loading",
+  default: false,
+});

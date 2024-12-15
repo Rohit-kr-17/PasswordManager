@@ -5,7 +5,7 @@ import Button from "../Components/Button";
 import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { authenticated, userAtom } from "../StateManagement/Atom";
+import { authenticated, Loading, userAtom } from "../StateManagement/Atom";
 import { useNavigate } from "react-router-dom";
 
 const SignIn = () => {
@@ -13,6 +13,7 @@ const SignIn = () => {
     Email: "",
     Password: "",
   });
+  const [loading, setLoading] = useRecoilState(Loading);
   const setUser = useSetRecoilState(userAtom);
   const [auth, setAuth] = useRecoilState(authenticated);
   const navigate = useNavigate();
@@ -32,30 +33,32 @@ const SignIn = () => {
   };
 
   const handleClick = async () => {
-    if (auth) {
-      navigate("/passwords", { replace: true });
-      return;
-    }
-    const response = await axios.post(
-      apiUrl + "user/signIn",
-      {
-        email: formData.Email,
-        password: formData.Password,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
+    try {
+      if (auth) {
+        navigate("/passwords", { replace: true });
+        return;
       }
-    );
-    if (response.status == 200) {
+      setLoading(true);
+      const response = await axios.post(
+        apiUrl + "user/signIn",
+        {
+          email: formData.Email,
+          password: formData.Password,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
       setAuth(true);
+      setLoading(false);
       const { email, id, name, uuid } = response.data;
       setUser({ email, name, id, uuid });
       navigate("/passwords", { replace: true });
-      return;
-    } else {
+    } catch (err) {
+      setLoading(false);
       setAuth(false);
       navigate("/sign-in");
       return;
