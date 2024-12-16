@@ -25,8 +25,7 @@ export function CreatePassword() {
   });
 
   const handleClick = async () => {
-   
-    const newPost = await axios.post(
+    await axios.post(
       apiUrl + "password/create",
       {
         title: formData.title,
@@ -39,8 +38,8 @@ export function CreatePassword() {
         withCredentials: true,
       }
     );
-    setVisiblity(false)
-    toast.success("Password added")
+    setVisiblity(false);
+    toast.success("Password added");
   };
   return (
     <div className="fixed z-10 inset-0 bg-gray-500 bg-opacity-30 backdrop-blur-sm flex items-center justify-center">

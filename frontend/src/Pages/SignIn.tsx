@@ -14,7 +14,7 @@ const SignIn = () => {
     Email: "",
     Password: "",
   });
-  const [loading, setLoading] = useRecoilState(Loading);
+  const setLoading = useSetRecoilState(Loading);
   const setUser = useSetRecoilState(userAtom);
   const [auth, setAuth] = useRecoilState(authenticated);
   const navigate = useNavigate();
