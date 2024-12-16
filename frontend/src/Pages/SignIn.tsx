@@ -4,7 +4,7 @@ import Input from "../Components/Input";
 import Button from "../Components/Button";
 import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { authenticated, Loading, userAtom } from "../StateManagement/Atom";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -14,7 +14,7 @@ const SignIn = () => {
     Email: "",
     Password: "",
   });
-  const [loading, setLoading] = useRecoilState(Loading);
+  const setLoading = useSetRecoilState(Loading);
   const setUser = useSetRecoilState(userAtom);
   const [auth, setAuth] = useRecoilState(authenticated);
   const navigate = useNavigate();
