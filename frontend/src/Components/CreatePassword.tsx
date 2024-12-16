@@ -5,6 +5,7 @@ import Input from "./Input";
 import Button from "./Button";
 import axios from "axios";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 export function CreatePassword() {
   const setVisiblity = useSetRecoilState(createPassword);
@@ -12,7 +13,6 @@ export function CreatePassword() {
     setVisiblity(false);
   };
   const handleChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(apiUrl);
     const { name, value } = target;
     setFormData((prevData) => ({
       ...prevData,
@@ -40,7 +40,7 @@ export function CreatePassword() {
       }
     );
     setVisiblity(false)
-    console.log(newPost);
+    toast.success("Password added")
   };
   return (
     <div className="fixed z-10 inset-0 bg-gray-500 bg-opacity-30 backdrop-blur-sm flex items-center justify-center">
