@@ -6,6 +6,7 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { authenticated, userAtom } from "../StateManagement/Atom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const SignUp = () => {
@@ -49,11 +50,13 @@ const SignUp = () => {
       );
       const { id, email, uuid, name } = response.data;
       setUser({ id, email, uuid, name });
+      toast.success("User created successfully")
       setAuth(true);
     } catch (err: any) {
-      if (err.status == 400) console.log("User already exisits");
+      if (err.status == 400) toast.error("User already exsists")
       else {
-        console.log("Internal server error");
+        // console.log("Internal server error");
+        toast.error("Internal server error")
       }
     }
   };

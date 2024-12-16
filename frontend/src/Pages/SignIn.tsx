@@ -7,6 +7,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { authenticated, Loading, userAtom } from "../StateManagement/Atom";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({
@@ -18,12 +19,12 @@ const SignIn = () => {
   const [auth, setAuth] = useRecoilState(authenticated);
   const navigate = useNavigate();
   useEffect(() => {
-    console.log("hello", auth);
     if (auth) {
       navigate("/passwords", { replace: true });
       return;
     }
   }, [auth, navigate]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -56,9 +57,11 @@ const SignIn = () => {
       setLoading(false);
       const { email, id, name, uuid } = response.data;
       setUser({ email, name, id, uuid });
+      toast.success("You are logged in.", { autoClose: 3000 });
       navigate("/passwords", { replace: true });
     } catch (err) {
       setLoading(false);
+      toast.error("Invalid Credentials")
       setAuth(false);
       navigate("/sign-in");
       return;
