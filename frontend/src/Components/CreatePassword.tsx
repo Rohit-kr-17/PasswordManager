@@ -25,7 +25,7 @@ export function CreatePassword() {
   });
 
   const handleClick = async () => {
-    gitawait axios.post(
+    await axios.post(
       apiUrl + "password/create",
       {
         title: formData.title,

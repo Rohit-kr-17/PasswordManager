@@ -4,7 +4,7 @@ import Input from "../Components/Input";
 import Button from "../Components/Button";
 import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { authenticated, Loading, userAtom } from "../StateManagement/Atom";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
