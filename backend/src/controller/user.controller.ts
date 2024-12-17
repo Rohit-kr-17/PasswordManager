@@ -1,5 +1,5 @@
 import { prisma } from "../db/db";
-import {  Response } from "express";
+import { Response } from "express";
 import * as argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
@@ -38,7 +38,6 @@ const SignUpController = async (req: any, res: Response) => {
       secreKey: newUser.uuid,
       token: token,
     });
-  
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "internal server error" });
@@ -68,7 +67,9 @@ const SignInController = async (req: any, res: Response): Promise<void> => {
         { userId: user.id },
         process.env.JWT_SECRET as string
       );
-      res.cookie("token", token);
+      res.cookie("token", token, {
+        sameSite: "none",
+      });
       res.status(200).json({
         message: "User Logged In successfully",
         id: user.id,
