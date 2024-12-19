@@ -1,6 +1,6 @@
 import { useSetRecoilState } from "recoil";
 const apiUrl = import.meta.env.VITE_API_URL;
-import { createPassword } from "../StateManagement/Atom";
+import { createPassword, Loading } from "../StateManagement/Atom";
 import Input from "./Input";
 import Button from "./Button";
 import axios from "axios";
@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 
 export function CreatePassword() {
   const setVisiblity = useSetRecoilState(createPassword);
+  const setLoading = useSetRecoilState(Loading);
   const handleVisiblity = () => {
     setVisiblity(false);
   };
@@ -25,21 +26,28 @@ export function CreatePassword() {
   });
 
   const handleClick = async () => {
-    await axios.post(
-      apiUrl + "password/create",
-      {
-        title: formData.title,
-        content: formData.content,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
+    setLoading(true);
+    try {
+      await axios.post(
+        apiUrl + "password/create",
+        {
+          title: formData.title,
+          content: formData.content,
         },
-        withCredentials: true,
-      }
-    );
-    setVisiblity(false);
-    toast.success("Password added");
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      setLoading(false);
+      setVisiblity(false);
+      toast.success("Password added");
+    } catch (err) {
+      setLoading(false);
+      toast.error("Internal server error");
+    }
   };
   return (
     <div className="fixed z-10 inset-0 bg-gray-500 bg-opacity-30 backdrop-blur-sm flex items-center justify-center">
