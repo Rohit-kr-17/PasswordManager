@@ -8,11 +8,23 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
-  credentials: true,
+app.use(
+  cors({
+    credentials: true,
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        "https://pm17.netlify.app",
+        "http://localhost:5173",
+      ];
 
-  origin: "https://pm17.netlify.app"
-}))
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+  })
+);
 
 app.use("/api/user/", userRouter);
 app.use("/api/password/", PasswordRouter);
