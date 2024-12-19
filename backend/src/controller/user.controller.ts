@@ -30,7 +30,11 @@ const SignUpController = async (req: any, res: Response) => {
       { userId: newUser.id },
       process.env.JWT_SECRET as string
     );
-    res.cookie("token", token);
+    res.cookie("token", token,{
+      path: "/",
+      sameSite:"none",
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
     res.status(200).json({
       message: "User created successfully",
       id: newUser.id,
@@ -68,7 +72,9 @@ const SignInController = async (req: any, res: Response): Promise<void> => {
         process.env.JWT_SECRET as string
       );
       res.cookie("token", token, {
+        path: "/",
         sameSite: "none",
+        maxAge: 7 * 24 * 60 * 60 * 1000
       });
       res.status(200).json({
         message: "User Logged In successfully",
