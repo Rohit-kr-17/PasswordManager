@@ -7,6 +7,7 @@ import PasswordRouter from "./routes/password.routes";
 const app = express();
 
 app.use(express.json());
+app.set('trust proxy', 1);
 app.use(cookieParser());
 app.use(
   cors({
