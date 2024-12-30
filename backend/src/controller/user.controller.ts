@@ -31,7 +31,6 @@ const SignUpController = async (req: any, res: Response) => {
       process.env.JWT_SECRET as string
     );
     res.cookie("token", token, {
-      httpOnly: true,
       sameSite: "none",
     });
     res.status(200).json({
@@ -71,7 +70,6 @@ const SignInController = async (req: any, res: Response): Promise<void> => {
         process.env.JWT_SECRET as string
       );
       res.cookie("token", token, {
-        httpOnly: true,
         sameSite: "none",
       });
       res.status(200).json({
