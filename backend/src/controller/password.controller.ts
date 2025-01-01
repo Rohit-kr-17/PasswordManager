@@ -18,7 +18,7 @@ const getAll = async (req: any, res: Response) => {
 const createPassword = async (req: any, res: Response) => {
   try {
     const { title, content, username } = req.body;
-    const newEntry = await prisma.post.create({
+    await prisma.post.create({
       data: {
         title: title,
         content: content,
