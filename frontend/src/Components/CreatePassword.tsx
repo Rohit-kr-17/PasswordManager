@@ -22,6 +22,7 @@ export function CreatePassword() {
   };
   const [formData, setFormData] = useState({
     title: "",
+    username:"",
     content: "",
   });
 
@@ -33,6 +34,7 @@ export function CreatePassword() {
         {
           title: formData.title,
           content: formData.content,
+          username:formData.username
         },
         {
           headers: {
@@ -69,6 +71,13 @@ export function CreatePassword() {
             type="text"
             name="title"
             placeholder="Enter Title"
+            onChange={handleChange}
+          />
+          <Input
+            label="Username"
+            type="text"
+            name="username"
+            placeholder="Enter username"
             onChange={handleChange}
           />
           <Input
