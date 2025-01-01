@@ -18,6 +18,7 @@ const getAll = async (req: any, res: Response) => {
 const createPassword = async (req: any, res: Response) => {
   try {
     const { title, content, username } = req.body;
+
     await prisma.post.create({
       data: {
         title: title,
@@ -57,6 +58,7 @@ const modifyPassword = async (req: any, res: Response) => {
         content: content ? content : post?.content,
         username: username ? username : post?.username,
         title: title ? title : post?.title,
+        username: username ? username : post?.username,
       },
     });
     res.status(200).json({ message: "Post updated successfully" });
