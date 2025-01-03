@@ -55,7 +55,7 @@ const SignUp = () => {
     } catch (err: any) {
       if (err.status == 400) toast.error("User already exsists")
       else {
-        // console.log("Internal server error");
+      
         toast.error("Internal server error")
       }
     }

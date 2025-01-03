@@ -18,7 +18,8 @@ const getAll = async (req: any, res: Response) => {
 const createPassword = async (req: any, res: Response) => {
   try {
     const { title, content, username } = req.body;
-    const newEntry = await prisma.post.create({
+
+    await prisma.post.create({
       data: {
         title: title,
         content: content,
@@ -26,7 +27,6 @@ const createPassword = async (req: any, res: Response) => {
         ownerId: req.user.id,
       },
     });
-    console.log(newEntry);
     res.json({
       message: "Password added successfully",
     });
@@ -41,6 +41,7 @@ const modifyPassword = async (req: any, res: Response) => {
     const post = await prisma.post.findUnique({
       where: {
         id: parseInt(id),
+        username: username,
         ownerId: req.user.id,
       },
     });
@@ -55,6 +56,7 @@ const modifyPassword = async (req: any, res: Response) => {
       },
       data: {
         content: content ? content : post?.content,
+        username: username ? username : post?.username,
         title: title ? title : post?.title,
         username: username ? username : post?.username,
       },

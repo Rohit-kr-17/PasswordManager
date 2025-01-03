@@ -11,6 +11,7 @@ interface Password {
   title: string;
   content: string;
   file?: string;
+  username?: string;
   createdAt: Date;
   username?: string;
   sharedAt?: Date;

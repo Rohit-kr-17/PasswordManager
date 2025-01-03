@@ -32,9 +32,9 @@ const Passwords = () => {
       const response = await axios.get(apiUrl + "password", {
         withCredentials: true,
       });
-      console.log(response);
+     
       setPasswords(response.data);
-      console.log(passwords);
+    
     };
     getPasswords();
   }, [auth, navigate, createPasswordVisiblity]);
@@ -55,6 +55,7 @@ const Passwords = () => {
               key={pass.id}
               id={pass.id}
               title={pass.title}
+              username={pass.username}
               content={pass.content}
               createdAt={pass.createdAt}
             />
