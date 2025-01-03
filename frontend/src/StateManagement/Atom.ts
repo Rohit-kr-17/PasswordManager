@@ -13,7 +13,6 @@ interface Password {
   file?: string;
   username?: string;
   createdAt: Date;
-  username?: string;
   sharedAt?: Date;
 }
 export const userAtom = atom<User | null>({

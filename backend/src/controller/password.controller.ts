@@ -58,7 +58,6 @@ const modifyPassword = async (req: any, res: Response) => {
         content: content ? content : post?.content,
         username: username ? username : post?.username,
         title: title ? title : post?.title,
-        username: username ? username : post?.username,
       },
     });
     res.status(200).json({ message: "Post updated successfully" });

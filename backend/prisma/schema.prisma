@@ -29,7 +29,6 @@ model Post {
   username  String?
   content   String?
   file      String?
-  username  String?
   ownerId   Int
   owner     User      @relation(fields: [ownerId], references: [id])
   createdAt DateTime  @default(now())
