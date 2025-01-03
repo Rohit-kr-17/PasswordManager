@@ -75,7 +75,7 @@ const SignIn = () => {
           label="Email"
           type="text"
           placeholder="Email"
-          onChange={handleChange}
+          onChange={handleChange}git 
         />
         <Input
           name="Password"
