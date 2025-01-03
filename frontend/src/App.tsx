@@ -5,7 +5,7 @@ import SignIn from "./Pages/SignIn";
 import SignUp from "./Pages/SignUp";
 import ErrorPage from "./Pages/Error";
 import Passwords from "./Pages/Passwords";
-import { useRecoilState, useResetRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { authenticated, Loading, userAtom } from "./StateManagement/Atom";
 import { useEffect } from "react";
 import axios from "axios";
