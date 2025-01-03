@@ -39,7 +39,7 @@ const SignUpController = async (req: any, res: Response) => {
       message: "User created successfully",
       id: newUser.id,
       email: newUser.email,
-      secreKey: newUser.uuid,
+      secretKey: newUser.uuid,
       token: token,
     });
   } catch (err) {
@@ -80,7 +80,7 @@ const SignInController = async (req: any, res: Response): Promise<void> => {
         message: "User Logged In successfully",
         id: user.id,
         email: user.email,
-        secreKey: user.uuid,
+        secretKey: user.uuid,
         token: token,
       });
       return;
