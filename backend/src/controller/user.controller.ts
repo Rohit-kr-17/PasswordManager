@@ -31,9 +31,9 @@ const SignUpController = async (req: any, res: Response) => {
       process.env.JWT_SECRET as string
     );
     res.cookie("token", token, {
-      httpOnly:true,
+      httpOnly: true,
       sameSite: "none",
-      secure:true
+      secure: true,
     });
     res.status(200).json({
       message: "User created successfully",
@@ -72,9 +72,9 @@ const SignInController = async (req: any, res: Response): Promise<void> => {
         process.env.JWT_SECRET as string
       );
       res.cookie("token", token, {
-        httpOnly:true,
+        httpOnly: true,
         sameSite: "none",
-        secure:true
+        secure: true,
       });
       res.status(200).json({
         message: "User Logged In successfully",
@@ -105,4 +105,15 @@ const isAuthenticated = (req: any, res: Response) => {
   }
 };
 
-export { SignUpController, SignInController, isAuthenticated };
+const logout = (req: any, res: Response) => {
+  try {
+    res.clearCookie("token");
+    res.status(200).json({ message: "Logged out" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "internal server error" });
+    return;
+  }
+};
+
+export { SignUpController, SignInController, isAuthenticated, logout };
