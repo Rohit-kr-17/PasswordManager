@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "deploy":"npx prisma migrate dev --name init && npx prisma generate && tsc -b && node dist/index.js",
+    "deploy": "npx prisma migrate dev --name init && npx prisma generate && tsc -b && node dist/index.js",
     "start": "tsc -b && node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -19,6 +19,7 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/uuid": "^10.0.0",
     "argon2": "^0.41.1",
+    "axios": "^1.7.9",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
