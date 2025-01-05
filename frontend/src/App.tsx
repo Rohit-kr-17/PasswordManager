@@ -20,9 +20,13 @@ function App() {
   useEffect(() => {
     const checkAuthenticated = async () => {
       try {
+        const token = localStorage.getItem("token");
         setLoading(true);
         const response = await axios.get(apiUrl + "user/isAuth", {
-          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token, // Example of a custom header
+          },
         });
         setLoading(false);
         if (response.status === 200) {

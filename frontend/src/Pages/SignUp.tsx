@@ -3,7 +3,7 @@ import { Box } from "../Components/Box";
 import Button from "../Components/Button";
 import Input from "../Components/Input";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { authenticated, Loading, userAtom } from "../StateManagement/Atom";
+import { authenticated, userAtom } from "../StateManagement/Atom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -18,7 +18,6 @@ const SignUp = () => {
   });
   const [auth, setAuth] = useRecoilState(authenticated);
   const setUser = useSetRecoilState(userAtom);
-  const setLoading = useSetRecoilState(Loading);
 
   useEffect(() => {
     if (auth) {
@@ -34,7 +33,6 @@ const SignUp = () => {
   };
   const handleClick = async () => {
     try {
-      setLoading(true);
       const { Username, Email, Password } = formData;
       const response = await axios.post(
         apiUrl + "user/signUp",
@@ -50,16 +48,14 @@ const SignUp = () => {
           withCredentials: true,
         }
       );
-      setLoading(false);
       const { id, email, uuid, name } = response.data;
       setUser({ id, email, uuid, name });
-      toast.success("User created successfully");
+      toast.success("User created successfully")
       setAuth(true);
     } catch (err: any) {
-      setLoading(false);
-      if (err.status == 400) toast.error("User already exsists");
+      if (err.status == 400) toast.error("User already exsists")
       else {
-        toast.error("Internal server error");
+        toast.error("Internal server error")
       }
     }
   };

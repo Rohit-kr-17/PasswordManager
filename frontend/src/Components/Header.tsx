@@ -1,13 +1,18 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { authenticated, userAtom } from "../StateManagement/Atom";
+import axios from "axios";
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export const Header = () => {
   const [auth, setAuth] = useRecoilState(authenticated);
   const user = useRecoilValue(userAtom);
   const navigate = useNavigate();
-  const handleLogout = () => {
-    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  const handleLogout = async () => {
+    console.log(document)
+    await axios.get(apiUrl + "user/logout", {
+      withCredentials: true,
+    });
     setAuth(false);
     navigate("/sign-in");
   };
