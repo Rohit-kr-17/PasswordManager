@@ -7,20 +7,20 @@ import PasswordRouter from "./routes/password.routes";
 import axios from "axios";
 const app = express();
 
-setTimeout(async () => {
+const pingBackend = async () => {
   try {
-    const url: string = process.env.PROD_URL || "http://localhost:8000";
-    await axios.get(url);
+    await axios.get(process.env.PROD_URL || "http://localhost:8000");
   } catch (error) {
     console.error("Error pinging backend:", error);
   }
-}, 15000);
+};
+setInterval(pingBackend, 15000);
 
 app.use(express.json());
 app.set("trust proxy", 1);
 app.use(cookieParser());
 app.get("/", (req, res) => {
-  console.log("hello");
+  console.log(process.env.PROD_URL);
 });
 app.use(
   cors({
