@@ -14,7 +14,7 @@ const pingBackend = async () => {
     console.error("Error pinging backend:", error);
   }
 };
-setInterval(pingBackend, 15000);
+setInterval(pingBackend, 50000);
 
 app.use(express.json());
 app.set("trust proxy", 1);
