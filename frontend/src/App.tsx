@@ -23,10 +23,7 @@ function App() {
         const token = localStorage.getItem("token");
         setLoading(true);
         const response = await axios.get(apiUrl + "user/isAuth", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token, // Example of a custom header
-          },
+          withCredentials: true,
         });
         setLoading(false);
         if (response.status === 200) {
