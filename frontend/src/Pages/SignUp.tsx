@@ -31,9 +31,20 @@ const SignUp = () => {
       [name]: value,
     }));
   };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleClick();
+    }
+  };
+
   const handleClick = async () => {
     try {
       const { Username, Email, Password } = formData;
+      if (!Username || !Email || !Password) {
+        alert("Please fill the required fields");
+        return;
+      }
       const response = await axios.post(
         apiUrl + "user/signUp",
         {
@@ -82,6 +93,7 @@ const SignUp = () => {
           type="Password"
           placeholder="Password"
           onChange={handleChange}
+          onKeyDown={handleKeyDown} 
         />
         <Button onClick={handleClick} tag="Submit" />
       </Box>
