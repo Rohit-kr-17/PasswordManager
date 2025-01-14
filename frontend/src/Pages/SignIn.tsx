@@ -33,6 +33,12 @@ const SignIn = () => {
     }));
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleClick();
+    }
+  };
+
   const handleClick = async () => {
     try {
       if (auth) {
@@ -83,6 +89,7 @@ const SignIn = () => {
           type="Password"
           placeholder="Password"
           onChange={handleChange}
+          onKeyDown={handleKeyDown} 
         />
         <Button onClick={handleClick} tag="Submit" />
       </Box>
