@@ -7,13 +7,17 @@ import { v4 as uuidv4 } from "uuid";
 const SignUpController = async (req: any, res: Response) => {
   try {
     const { email, password, name } = req.body;
+    if (!email || !password || !name) {
+      res.status(400).json({ message: "Empty fields" });
+      return;
+    }
     const user = await prisma.user.findUnique({
       where: {
         email: email,
       },
     });
     if (user) {
-      res.status(400).json({ message: "User already exists" });
+      res.status(409).json({ message: "User already exists" });
       return;
     }
     const hash = await argon2.hash(password);
