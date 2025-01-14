@@ -8,8 +8,9 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import axios from "axios";
-import { CreatePassword } from "../Components/CreatePassword";
+// import { CreatePassword } from "../Components/CreatePassword";
 import AddIcon from "@mui/icons-material/Add";
+import { PasswordForm } from "../Components/PasswordForm";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const Passwords = () => {
@@ -48,7 +49,7 @@ const Passwords = () => {
         >
           <AddIcon className="text-gray-400 h-9 w-9" />
         </button>
-        <div>{createPasswordVisiblity && <CreatePassword />}</div>
+        <div>{createPasswordVisiblity && <PasswordForm />}</div>
         <div>
           {passwords?.map((pass) => (
             <PasswordComponent

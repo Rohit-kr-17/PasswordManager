@@ -3,17 +3,23 @@ interface InputProps {
   type: string;
   name: string;
   placeholder?: string;
-  onChange?: any
+  value?: any;
+  onChange?: any;
 }
-const Input = (
-  { label, type, name, placeholder,...rest }: InputProps,
-
-) => {
+const Input = ({
+  label,
+  type,
+  name,
+  placeholder,
+  value,
+  ...rest
+}: InputProps) => {
   return (
     <div>
       <label htmlFor={label}>{label}</label>
       <input
         name={name}
+        value={value}
         className="w-full border rounded-sm h-auto p-2"
         type={type}
         placeholder={placeholder}
