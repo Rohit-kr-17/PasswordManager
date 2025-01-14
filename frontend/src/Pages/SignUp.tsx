@@ -53,7 +53,8 @@ const SignUp = () => {
       toast.success("User created successfully")
       setAuth(true);
     } catch (err: any) {
-      if (err.status == 400) toast.error("User already exsists")
+      if (err.status == 409) toast.error("User already exsists")
+      else if(err.status == 400) toast.error("Please fill in all required fields")
       else {
         toast.error("Internal server error")
       }

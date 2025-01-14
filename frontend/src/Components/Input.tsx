@@ -5,6 +5,7 @@ interface InputProps {
   placeholder?: string;
   value?: any;
   onChange?: any;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 const Input = ({
   label,
