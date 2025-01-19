@@ -1,7 +1,8 @@
 import { Response } from "express";
 import { prisma } from "../db/db";
-import * as argon2 from "argon2";
+import Cryptr from "cryptr";
 
+const cryptr = new Cryptr(process.env.JWT_SECRET);
 const getAll = async (req: any, res: Response) => {
   try {
     const id = req.user.id;
@@ -11,6 +12,10 @@ const getAll = async (req: any, res: Response) => {
       },
       orderBy: { createdAt: "asc" },
     });
+    contents.forEach(e => {
+      e.content = cryptr.decrypt(e.content)
+    })
+    
     res.status(200).json(contents);
   } catch (err) {
     throw "Internal server error";
@@ -20,11 +25,11 @@ const getAll = async (req: any, res: Response) => {
 const createPassword = async (req: any, res: Response) => {
   try {
     const { title, content, username } = req.body;
-
+    const encryptPass = cryptr.encrypt(content);
     await prisma.post.create({
       data: {
         title: title,
-        content: content,
+        content: encryptPass,
         username: username,
         ownerId: req.user.id,
       },
