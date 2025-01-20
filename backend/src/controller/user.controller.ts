@@ -3,10 +3,74 @@ import { Response } from "express";
 import * as argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
+import { User } from "@prisma/client";
 
-const SignUpController = async (req: any, res: Response) => {
+function generateRandomWord() {
+  const letters = "abcdefghijklmnopqrstuvwxyz";
+  let word = "";
+  for (let i = 0; i < 5; i++) {
+    const randomIndex = Math.floor(Math.random() * letters.length);
+    word += letters[randomIndex];
+  }
+  return word;
+}
+const SignUpController = async (req: any, res: Response): Promise<any> => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password, name, googleLogin } = req.body;
+    if (googleLogin) {
+      const user = await prisma.user.findUnique({
+        where: {
+          email: email,
+          googleLogin: true
+        }
+      })
+      if (user) {
+        const token = jwt.sign(
+          { userId: user.id },
+          process.env.JWT_SECRET as string
+        );
+        res.cookie("token", token, {
+          httpOnly: true,
+          sameSite: "none",
+          secure: true,
+        });
+        return res.status(200).json({
+          message: "User signed In successfully",
+          id: user.id,
+          email: user.email,
+          secretKey: user.uuid,
+          token: token,
+        });
+      } else {
+        const password = generateRandomWord();
+        const hash = await argon2.hash(password);
+        const user = await prisma.user.create({
+          data: {
+            email: email,
+            name: name,
+            uuid: uuidv4(),
+            password: hash,
+            googleLogin: true,
+          },
+        });
+        const token = jwt.sign(
+          { userId: user.id },
+          process.env.JWT_SECRET as string
+        );
+        res.cookie("token", token, {
+          httpOnly: true,
+          sameSite: "none",
+          secure: true,
+        });
+        return res.status(200).json({
+          message: "User signed In successfully",
+          id: user.id,
+          email: user.email,
+          secretKey: user.uuid,
+          token: token,
+        });
+      }
+    }
     if (!email || !password || !name) {
       res.status(400).json({ message: "Empty fields" });
       return;
@@ -27,9 +91,9 @@ const SignUpController = async (req: any, res: Response) => {
         name: name,
         uuid: uuidv4(),
         password: hash,
+        googleLogin: false,
       },
     });
-
     const token = jwt.sign(
       { userId: newUser.id },
       process.env.JWT_SECRET as string
@@ -52,12 +116,66 @@ const SignUpController = async (req: any, res: Response) => {
   }
 };
 
-const SignInController = async (req: any, res: Response): Promise<void> => {
+const SignInController = async (req: any, res: Response): Promise<any> => {
   try {
-    const { email, password } = req.body;
-    if (!email || !password) {
+    const { email, password, googleLogin, name } = req.body;
+    if (!googleLogin && (!email || !password)) {
       res.status(400).json({ message: "Email and password are required" });
       return;
+    }
+    if (googleLogin) {
+      const user = await prisma.user.findUnique({
+        where: {
+          email: email,
+          googleLogin: true
+        }
+      })
+      if (user) {
+        const token = jwt.sign(
+          { userId: user.id },
+          process.env.JWT_SECRET as string
+        );
+        res.cookie("token", token, {
+          httpOnly: true,
+          sameSite: "none",
+          secure: true,
+        });
+        return res.status(200).json({
+          message: "User signed In successfully",
+          id: user.id,
+          email: user.email,
+          secretKey: user.uuid,
+          token: token,
+        });
+      } else {
+        const password = generateRandomWord();
+        const hash = await argon2.hash(password);
+        const user = await prisma.user.create({
+          data: {
+            email: email,
+            name: name,
+            uuid: uuidv4(),
+            password: hash,
+            googleLogin: true,
+          },
+        });
+        const token = jwt.sign(
+          { userId: user.id },
+          process.env.JWT_SECRET as string
+        );
+        res.cookie("token", token, {
+          httpOnly: true,
+          sameSite: "none",
+          secure: true,
+        });
+        return res.status(200).json({
+          message: "User signed In successfully",
+          id: user.id,
+          email: user.email,
+          secretKey: user.uuid,
+          token: token,
+        });
+      }
     }
     const user = await prisma.user.findUnique({
       where: {
