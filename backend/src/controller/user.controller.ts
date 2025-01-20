@@ -71,6 +71,7 @@ const SignUpController = async (req: any, res: Response): Promise<any> => {
         });
       }
     }
+
     if (!email || !password || !name) {
       res.status(400).json({ message: "Empty fields" });
       return;
@@ -112,7 +113,7 @@ const SignUpController = async (req: any, res: Response): Promise<any> => {
     });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "internal server error" });
+    res.status(500).json({ message: "inteal server error" });
   }
 };
 
