@@ -4,8 +4,13 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useState } from "react";
 import { MdDelete } from "react-icons/md";
 import axios from "axios";
-import { useRecoilState } from "recoil";
-import { passwordsAtom } from "../StateManagement/Atom";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import {
+  createPassword,
+  ModifyPasswordState,
+  passwordsAtom,
+} from "../StateManagement/Atom";
+import { CiEdit } from "react-icons/ci";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 interface PasswordComponentProps {
@@ -27,6 +32,8 @@ export const PasswordComponent: React.FC<PasswordComponentProps> = ({
   const [toggleBorder, setToggleBorder] = useState(false);
   const [toggleVisiblity, SetToggleVisiblity] = useState(false);
   const [password, setPassword] = useRecoilState(passwordsAtom);
+  const setVisiblity = useSetRecoilState(createPassword);
+  const setModifyPassowrd = useSetRecoilState(ModifyPasswordState);
   const deletePassword = async () => {
     try {
       const updatedPasswords = (password ?? [])?.filter(
@@ -40,6 +47,17 @@ export const PasswordComponent: React.FC<PasswordComponentProps> = ({
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const updatePassword = () => {
+    setModifyPassowrd({
+      id,
+      title,
+      content,
+      username,
+      modifyPassword: true,
+    });
+    setVisiblity(true);
   };
 
   const handleVisiblity = () => {
@@ -108,6 +126,9 @@ export const PasswordComponent: React.FC<PasswordComponentProps> = ({
           </div>
         </AccordionDetails>
         <div className="flex justify-end p-5">
+          <button className="text-2xl pr-2" onClick={updatePassword}>
+            <CiEdit />
+          </button>
           <button
             onClick={deletePassword}
             className="text-red-500 text-2xl hover:underline"
