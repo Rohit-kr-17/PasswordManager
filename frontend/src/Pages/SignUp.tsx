@@ -7,17 +7,19 @@ import { authenticated, userAtom } from "../StateManagement/Atom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-const apiUrl = import.meta.env.VITE_API_URL;
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { firebaseConfig } from "../firebase";
 import { FcGoogle } from "react-icons/fc";
+const apiUrl = import.meta.env.VITE_API_URL;
+
+// Initialize Firebase outside the component to avoid re-initialization
+initializeApp(firebaseConfig);
+const gAuth = getAuth();
+const provider = new GoogleAuthProvider();
 
 const SignUp = () => {
-const navigate = useNavigate();
-  initializeApp(firebaseConfig);
-  const gAuth = getAuth();
-  const provider = new GoogleAuthProvider();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     Username: "",
     Email: "",
@@ -26,21 +28,18 @@ const navigate = useNavigate();
   });
   const [auth, setAuth] = useRecoilState(authenticated);
   const setUser = useSetRecoilState(userAtom);
+
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInWithPopup(gAuth, provider);
       const email = result.user.email;
       const name = result.user.displayName;
-      setFormData(() => ({
-        Email: email as string,
-        Password: "",
-        Username: name as string,
-        googleLogin: true,
-      }));
 
-      handleClick(email as string, name as string, "", true);
+      // Directly call handleClick with Google Sign-In data
+      await handleClick(email as string, name as string, "", true);
     } catch (error) {
-      console.error("Error during sign-in:", error);
+      console.error("Error during Google sign-in:", error);
+      toast.error("Failed to sign in with Google.");
     }
   };
 
@@ -49,6 +48,7 @@ const navigate = useNavigate();
       navigate("/passwords");
     }
   }, [auth, navigate]);
+
   const handleChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = target;
     setFormData((prevData) => ({
@@ -56,18 +56,24 @@ const navigate = useNavigate();
       [name]: value,
     }));
   };
+
   const handleClick = async (
-    Email = formData.Email,
+    userEmail = formData.Email,
     Name = formData.Username,
     Password = formData.Password,
     googleLogin = formData.googleLogin
   ) => {
+    if (!userEmail || !Name || (!Password && !googleLogin)) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
     try {
       const response = await axios.post(
-        apiUrl + "user/signUp",
+        `${apiUrl}user/signUp`,
         {
           name: Name,
-          email: Email,
+          email: userEmail,
           password: Password,
           googleLogin,
         },
@@ -78,19 +84,23 @@ const navigate = useNavigate();
           withCredentials: true,
         }
       );
+
       const { id, email, uuid, name } = response.data;
       setUser({ id, email, uuid, name });
       toast.success("User created successfully");
       setAuth(true);
     } catch (err: any) {
-      if (err.status == 409) toast.error("User already exsists");
-      else if (err.status == 400)
+      if (err.response?.status === 409) {
+        toast.error("User already exists");
+      } else if (err.response?.status === 400) {
         toast.error("Please fill in all required fields");
-      else {
+      } else {
+        console.error("Error:", err);
         toast.error("Internal server error");
       }
     }
   };
+
   return (
     <div className="pt-[50px]">
       <Box heading="Sign Up">
@@ -111,14 +121,14 @@ const navigate = useNavigate();
         <Input
           name="Password"
           label="Password"
-          type="Password"
+          type="password"
           placeholder="Password"
           onChange={handleChange}
         />
-        <Button onClick={handleClick} tag="Submit" />
+        <Button onClick={() => handleClick()} tag="Submit" />
         <div className="flex justify-center items-center">
           <button
-            className="flex  items-center justify-center w-full border-2 p-2 rounded-md  border-[#7091E6] mt-2"
+            className="flex items-center justify-center w-full border-2 p-2 rounded-md border-[#7091E6] mt-2"
             onClick={handleGoogleSignIn}
           >
             <FcGoogle className="text-xl mr-1" /> Sign In with Google
@@ -128,4 +138,5 @@ const navigate = useNavigate();
     </div>
   );
 };
+
 export default SignUp;
