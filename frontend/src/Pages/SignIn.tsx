@@ -13,8 +13,10 @@ import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { firebaseConfig } from "../firebase";
 import { FcGoogle } from "react-icons/fc";
 
+initializeApp(firebaseConfig);
+const provider = new GoogleAuthProvider();
+const gAuth = getAuth();
 const SignIn = () => {
-  const provider = new GoogleAuthProvider();
   const [formData, setFormData] = useState({
     Email: "",
     Password: "",
@@ -25,8 +27,7 @@ const SignIn = () => {
   const setUser = useSetRecoilState(userAtom);
   const [auth, setAuth] = useRecoilState(authenticated);
   const navigate = useNavigate();
-  const app = initializeApp(firebaseConfig);
-  const gAuth = getAuth();
+ 
 
   const handleGoogleSignIn = async () => {
     try {
