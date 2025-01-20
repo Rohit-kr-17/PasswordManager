@@ -14,8 +14,8 @@ import { firebaseConfig } from "../firebase";
 import { FcGoogle } from "react-icons/fc";
 
 const SignUp = () => {
-  const navigate = useNavigate();
-  const app = initializeApp(firebaseConfig);
+const navigate = useNavigate();
+  initializeApp(firebaseConfig);
   const gAuth = getAuth();
   const provider = new GoogleAuthProvider();
   const [formData, setFormData] = useState({
