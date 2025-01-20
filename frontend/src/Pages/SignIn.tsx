@@ -25,7 +25,7 @@ const SignIn = () => {
   const setUser = useSetRecoilState(userAtom);
   const [auth, setAuth] = useRecoilState(authenticated);
   const navigate = useNavigate();
-  const app = initializeApp(firebaseConfig);
+  initializeApp(firebaseConfig);
   const gAuth = getAuth();
 
   const handleGoogleSignIn = async () => {
