@@ -34,7 +34,7 @@ export const Header = () => {
           </NavLink>
         )}
       </div>
-      <div className="hidden md:flex gap-5">
+      <div className="flex gap-5">
         {auth ? (
           <>
             <NavLink

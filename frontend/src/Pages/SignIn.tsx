@@ -30,10 +30,11 @@ const SignIn = () => {
 
   const handleGoogleSignIn = async () => {
     try {
+      setLoading(true);
       const result = await signInWithPopup(gAuth, provider);
       const email = result.user.email;
       const name = result.user.displayName;
-      handleClick(email as string, name as string, "", true);
+      signIn(email as string, name as string, "", true);
       console.log("User Info:", result.user);
     } catch (error) {
       console.error("Error during sign-in:", error);
@@ -61,8 +62,11 @@ const SignIn = () => {
     }
   };
 
-  const handleClick = async (
-    Email = formData.Email,
+  const handleClick = async () => {
+    await signIn();
+  };
+  const signIn = async (
+    email = formData.Email,
     Name = formData.name,
     password = formData.Password,
     googleLogin = formData.googleLogin
@@ -72,12 +76,11 @@ const SignIn = () => {
         navigate("/passwords", { replace: true });
         return;
       }
-      // console.log( email, name, password, googleLogin );
       setLoading(true);
       const response = await axios.post(
         apiUrl + "user/signIn",
         {
-          email: Email,
+          email: email,
           name: Name,
           password: password,
           googleLogin: googleLogin,
@@ -91,7 +94,7 @@ const SignIn = () => {
       );
       setAuth(true);
       setLoading(false);
-      const { email, id, name, uuid } = response.data;
+      const { id, name, uuid } = response.data;
       setUser({ email, name, id, uuid });
       toast.success("You are logged in.", { autoClose: 3000 });
       navigate("/passwords", { replace: true });

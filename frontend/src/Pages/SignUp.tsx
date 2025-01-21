@@ -34,9 +34,7 @@ const SignUp = () => {
       const result = await signInWithPopup(gAuth, provider);
       const email = result.user.email;
       const name = result.user.displayName;
-
-      // Directly call handleClick with Google Sign-In data
-      await handleClick(email as string, name as string, "", true);
+      await signUp(email as string, name as string, "", true);
     } catch (error) {
       console.error("Error during Google sign-in:", error);
       toast.error("Failed to sign in with Google.");
@@ -56,8 +54,10 @@ const SignUp = () => {
       [name]: value,
     }));
   };
-
-  const handleClick = async (
+  const handleClick = async () => {
+    await signUp();
+  };
+  const signUp = async (
     userEmail = formData.Email,
     Name = formData.Username,
     Password = formData.Password,
