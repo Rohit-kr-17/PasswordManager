@@ -5,6 +5,12 @@ import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import { User } from "@prisma/client";
 
+interface UserType {
+  id: number,
+  email: string,
+  uuid: string,
+  token?: string,
+}
 function generateRandomWord() {
   const letters = "abcdefghijklmnopqrstuvwxyz";
   let word = "";
@@ -14,201 +20,154 @@ function generateRandomWord() {
   }
   return word;
 }
-const SignUpController = async (req: any, res: Response): Promise<any> => {
-  try {
-    const { email, password, name, googleLogin } = req.body;
-    if (googleLogin) {
-      const user = await prisma.user.findUnique({
-        where: {
-          email: email,
-          googleLogin: true
-        }
-      })
-      if (user) {
-        const token = jwt.sign(
-          { userId: user.id },
-          process.env.JWT_SECRET as string
-        );
-        res.cookie("token", token, {
-          httpOnly: true,
-          sameSite: "none",
-          secure: true,
-        });
-        return res.status(200).json({
-          message: "User signed In successfully",
-          id: user.id,
-          email: user.email,
-          secretKey: user.uuid,
-          token: token,
-        });
-      } else {
-        const password = generateRandomWord();
-        const hash = await argon2.hash(password);
-        const user = await prisma.user.create({
-          data: {
-            email: email,
-            name: name,
-            uuid: uuidv4(),
-            password: hash,
-            googleLogin: true,
-          },
-        });
-        const token = jwt.sign(
-          { userId: user.id },
-          process.env.JWT_SECRET as string
-        );
-        res.cookie("token", token, {
-          httpOnly: true,
-          sameSite: "none",
-          secure: true,
-        });
-        return res.status(200).json({
-          message: "User signed In successfully",
-          id: user.id,
-          email: user.email,
-          secretKey: user.uuid,
-          token: token,
-        });
-      }
-    }
 
-    if (!email || !password || !name) {
-      res.status(400).json({ message: "Empty fields" });
-      return;
-    }
+async function googleSignUpSignIn(email: string, name: string) {
+  try {
+    let userData: UserType
     const user = await prisma.user.findUnique({
       where: {
         email: email,
-      },
-    });
+        googleLogin: true
+      }
+    })
     if (user) {
-      res.status(409).json({ message: "User already exists" });
-      return;
+      const token = jwt.sign(
+        { userId: user.id },
+        process.env.JWT_SECRET as string
+      );
+
+      userData = {
+        id: user.id,
+        email: user.email,
+        uuid: user.uuid,
+        token: token,
+      }
+    } else {
+      const password = generateRandomWord();
+      const hash = await argon2.hash(password);
+      const user = await prisma.user.create({
+        data: {
+          email: email,
+          name: name,
+          uuid: uuidv4(),
+          password: hash,
+          googleLogin: true,
+        },
+      });
+      const token = jwt.sign(
+        { userId: user.id },
+        process.env.JWT_SECRET as string
+      );
+      userData = {
+        id: user.id,
+        email: user.email,
+        uuid: user.uuid,
+        token: token,
+      }
     }
-    const hash = await argon2.hash(password);
-    const newUser = await prisma.user.create({
-      data: {
-        email: email,
-        name: name,
-        uuid: uuidv4(),
-        password: hash,
-        googleLogin: false,
-      },
-    });
-    const token = jwt.sign(
-      { userId: newUser.id },
-      process.env.JWT_SECRET as string
-    );
-    res.cookie("token", token, {
+    return userData
+  } catch (err) {
+   
+  }
+}
+const SignUpController = async (req: any, res: Response): Promise<any> => {
+  try {
+    const { email, password, name, googleLogin } = req.body;
+    let userData: UserType
+    if (googleLogin) {
+      userData = await googleLogin(email, name) as UserType
+    }
+    else if (!email || !password || !name) {
+      res.status(400).json({ message: "Empty fields" });
+      return;
+    } else {
+      const user = await prisma.user.findUnique({
+        where: {
+          email: email,
+        },
+      });
+      if (user) {
+        res.status(409).json({ message: "User already exists" });
+        return;
+      }
+      const hash = await argon2.hash(password);
+      userData = await prisma.user.create({
+        data: {
+          email: email,
+          name: name,
+          uuid: uuidv4(),
+          password: hash,
+          googleLogin: false,
+        },
+      });
+      userData.token = jwt.sign(
+        { userId: userData.id },
+        process.env.JWT_SECRET as string
+      );
+    }
+
+    res.cookie("token", userData.token, {
       httpOnly: true,
       sameSite: "none",
       secure: true,
     });
     res.status(200).json({
       message: "User created successfully",
-      id: newUser.id,
-      email: newUser.email,
-      secretKey: newUser.uuid,
-      token: token,
+      id: userData.id,
+      email: userData.email,
+      secretKey: userData.uuid,
+      token: userData.token,
     });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "inteal server error" });
+    res.status(500).json({ message: "internal server error" });
   }
 };
 
 const SignInController = async (req: any, res: Response): Promise<any> => {
   try {
     const { email, password, googleLogin, name } = req.body;
-    if (!googleLogin && (!email || !password)) {
+    let userData: UserType
+    if (googleLogin) {
+      userData = await googleSignUpSignIn(email, name) as UserType
+    } else if (!googleLogin && (!email || !password)) {
       res.status(400).json({ message: "Email and password are required" });
       return;
-    }
-    if (googleLogin) {
+    } else {
       const user = await prisma.user.findUnique({
         where: {
           email: email,
-          googleLogin: true
-        }
-      })
-      if (user) {
-        const token = jwt.sign(
+        },
+      });
+      if (!user) {
+        res.status(404).json({ message: "Invalid Credentials" });
+        return;
+      }
+      const isPasswordValid = await argon2.verify(user.password, password);
+
+      if (isPasswordValid) {
+        userData = user
+        userData.token = jwt.sign(
           { userId: user.id },
           process.env.JWT_SECRET as string
-        );
-        res.cookie("token", token, {
-          httpOnly: true,
-          sameSite: "none",
-          secure: true,
-        });
-        return res.status(200).json({
-          message: "User signed In successfully",
-          id: user.id,
-          email: user.email,
-          secretKey: user.uuid,
-          token: token,
-        });
+        )
       } else {
-        const password = generateRandomWord();
-        const hash = await argon2.hash(password);
-        const user = await prisma.user.create({
-          data: {
-            email: email,
-            name: name,
-            uuid: uuidv4(),
-            password: hash,
-            googleLogin: true,
-          },
-        });
-        const token = jwt.sign(
-          { userId: user.id },
-          process.env.JWT_SECRET as string
-        );
-        res.cookie("token", token, {
-          httpOnly: true,
-          sameSite: "none",
-          secure: true,
-        });
-        return res.status(200).json({
-          message: "User signed In successfully",
-          id: user.id,
-          email: user.email,
-          secretKey: user.uuid,
-          token: token,
-        });
+        res.status(404).json({ message: "Invalid Credentials" });
+        return;
       }
     }
-    const user = await prisma.user.findUnique({
-      where: {
-        email: email,
-      },
+    res.cookie("token", userData.token, {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
     });
-    if (!user) {
-      res.status(404).json({ message: "Invalid Credentials" });
-      return;
-    }
-    const isPasswordValid = await argon2.verify(user.password, password);
-
-    if (isPasswordValid) {
-      const token = jwt.sign(
-        { userId: user.id },
-        process.env.JWT_SECRET as string
-      );
-      res.cookie("token", token, {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-      });
-      res.status(200).json({
-        message: "User Logged In successfully",
-        id: user.id,
-        email: user.email,
-        secretKey: user.uuid,
-        token: token,
-      });
-      return;
-    }
-    res.status(404).json({ message: "Invalid Credentials" });
+    res.status(200).json({
+      message: "User Logged In successfully",
+      id: userData.id,
+      email: userData.email,
+      secretKey: userData.uuid,
+      token: userData.token,
+    });
     return;
   } catch (err) {
     console.log(err);

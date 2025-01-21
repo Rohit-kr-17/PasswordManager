@@ -27,20 +27,12 @@ const SignIn = () => {
   const setUser = useSetRecoilState(userAtom);
   const [auth, setAuth] = useRecoilState(authenticated);
   const navigate = useNavigate();
- 
 
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInWithPopup(gAuth, provider);
       const email = result.user.email;
       const name = result.user.displayName;
-      setFormData({
-        Email: email as string,
-        Password: "",
-        name: name as string,
-        googleLogin: true,
-      });
-
       handleClick(email as string, name as string, "", true);
       console.log("User Info:", result.user);
     } catch (error) {
