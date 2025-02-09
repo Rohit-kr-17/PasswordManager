@@ -30,12 +30,16 @@ const Passwords = () => {
       return;
     }
     const getPasswords = async () => {
-      const response = await axios.get(apiUrl + "password", {
-        withCredentials: true,
-      });
-     
-      setPasswords(response.data);
-    
+      try {
+        const response = await axios.get(apiUrl + "password", {
+          withCredentials: true,
+        });
+        console.log(response.data);
+        setPasswords(response.data);
+      } catch (err) {
+        console.log(err);
+        setPasswords([]);
+      }
     };
     getPasswords();
   }, [auth, navigate, createPasswordVisiblity]);
