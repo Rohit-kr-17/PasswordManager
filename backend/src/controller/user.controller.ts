@@ -5,8 +5,11 @@ import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import { initializeApp } from 'firebase-admin/app';
 import admin from 'firebase-admin';
-import * as serviceAccount from '/etc/secrets/pmsa';
+import * as fs from 'fs';
+import * as path from 'path';
 
+const keyPath = '/etc/secrets/private-key.pem';
+const privateKey = fs.readFileSync(keyPath, 'utf-8');
 interface ServiceAccount {
   type: string;
   project_id: string;
@@ -20,7 +23,7 @@ interface ServiceAccount {
   client_x509_cert_url: string;
 }
 initializeApp();
-const credentials: ServiceAccount = serviceAccount;
+const credentials: ServiceAccount = privateKey as unknown as ServiceAccount;
 admin.app().delete()
   .then(() => {
     console.log('Firebase app deleted successfully!');
