@@ -2,7 +2,7 @@ import { Response } from "express";
 import { prisma } from "../db/db";
 import Cryptr from "cryptr";
 
-const cryptr = new Cryptr(process.env.JWT_SECRET as string);
+const cryptr = new Cryptr(process.env.CRYPTR_SECRET as string);
 const getAll = async (req: any, res: Response) => {
   try {
     const id = req.user.id;
@@ -12,13 +12,14 @@ const getAll = async (req: any, res: Response) => {
       },
       orderBy: { createdAt: "asc" },
     });
-    contents.forEach(e => {
-      e.content = cryptr.decrypt(e.content as string)
-    })
+    await Promise.all(contents.map(async e => {
+      e.content = await cryptr.decrypt(e.content as string)
+    }));
 
     res.status(200).json(contents);
   } catch (err) {
-    throw "Internal server error";
+    console.error("Error fetching passwords:", err);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 

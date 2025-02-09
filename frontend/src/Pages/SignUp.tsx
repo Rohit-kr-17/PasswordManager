@@ -25,6 +25,7 @@ const SignUp = () => {
     Email: "",
     Password: "",
     googleLogin: false,
+    token: "",
   });
   const [auth, setAuth] = useRecoilState(authenticated);
   const setUser = useSetRecoilState(userAtom);
@@ -32,9 +33,8 @@ const SignUp = () => {
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInWithPopup(gAuth, provider);
-      const email = result.user.email;
-      const name = result.user.displayName;
-      await signUp(email as string, name as string, "", true);
+      const token = await result.user.getIdToken();
+      await signUp("", "", "", true, token);
     } catch (error) {
       console.error("Error during Google sign-in:", error);
       toast.error("Failed to sign in with Google.");
@@ -61,9 +61,10 @@ const SignUp = () => {
     userEmail = formData.Email,
     Name = formData.Username,
     Password = formData.Password,
-    googleLogin = formData.googleLogin
+    googleLogin = formData.googleLogin,
+    token = formData.token
   ) => {
-    if (!userEmail || !Name || (!Password && !googleLogin)) {
+    if (!googleLogin && !userEmail && !Name && !Password && !googleLogin) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -75,6 +76,7 @@ const SignUp = () => {
           name: Name,
           email: userEmail,
           password: Password,
+          googleToken: token,
           googleLogin,
         },
         {

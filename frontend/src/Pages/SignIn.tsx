@@ -20,7 +20,7 @@ const SignIn = () => {
   const [formData, setFormData] = useState({
     Email: "",
     Password: "",
-    name: "",
+    token: "",
     googleLogin: false,
   });
   const setLoading = useSetRecoilState(Loading);
@@ -32,9 +32,8 @@ const SignIn = () => {
     try {
       setLoading(true);
       const result = await signInWithPopup(gAuth, provider);
-      const email = result.user.email;
-      const name = result.user.displayName;
-      signIn(email as string, name as string, "", true);
+      const token = await result.user.getIdToken();
+      signIn("", "",token, true);
       console.log("User Info:", result.user);
     } catch (error) {
       console.error("Error during sign-in:", error);
@@ -67,8 +66,8 @@ const SignIn = () => {
   };
   const signIn = async (
     email = formData.Email,
-    Name = formData.name,
     password = formData.Password,
+    token=formData.token,
     googleLogin = formData.googleLogin
   ) => {
     try {
@@ -81,8 +80,8 @@ const SignIn = () => {
         apiUrl + "user/signIn",
         {
           email: email,
-          name: Name,
           password: password,
+          googleToken:token,
           googleLogin: googleLogin,
         },
         {
