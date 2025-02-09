@@ -10,6 +10,7 @@ import * as path from 'path';
 
 const keyPath = '/etc/secrets/pmsa.json';
 const privateKey = fs.readFileSync(keyPath, 'utf-8');
+console.log(privateKey)
 interface ServiceAccount {
   type: string;
   project_id: string;
