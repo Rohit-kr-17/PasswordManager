@@ -8,7 +8,7 @@ import admin from 'firebase-admin';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const keyPath = '/etc/secrets/private-key.pem';
+const keyPath = '/etc/secrets/pmsa.json';
 const privateKey = fs.readFileSync(keyPath, 'utf-8');
 interface ServiceAccount {
   type: string;
