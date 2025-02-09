@@ -23,7 +23,7 @@ interface ServiceAccount {
   client_x509_cert_url: string;
 }
 initializeApp();
-const credentials: ServiceAccount = privateKey as unknown as ServiceAccount;
+const credentials: ServiceAccount = privateKey as ServiceAccount;
 admin.app().delete()
   .then(() => {
     console.log('Firebase app deleted successfully!');
