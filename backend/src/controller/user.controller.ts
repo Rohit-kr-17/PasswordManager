@@ -3,40 +3,7 @@ import { Response } from "express";
 import * as argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
-import { initializeApp } from 'firebase-admin/app';
-import admin from 'firebase-admin';
-import * as fs from 'fs';
-import * as path from 'path';
-
-const keyPath = '/etc/secrets/pmsa.json';
-const privateKey = fs.readFileSync(keyPath, 'utf-8');
-console.log(privateKey)
-interface ServiceAccount {
-  type: string;
-  project_id: string;
-  private_key_id: string;
-  private_key: string;
-  client_email: string;
-  client_id: string;
-  auth_uri: string;
-  token_uri: string;
-  auth_provider_x509_cert_url: string;
-  client_x509_cert_url: string;
-}
-initializeApp();
-const credentials: ServiceAccount = privateKey as ServiceAccount;
-admin.app().delete()
-  .then(() => {
-    console.log('Firebase app deleted successfully!');
-  })
-  .catch((error) => {
-    console.error('Error deleting Firebase app:', error);
-  });
-
-admin.initializeApp({
-  //@ts-ignore
-  credential: admin.credential.cert(credentials),
-});
+import { admin } from "../utils/GoogleApp";
 
 interface UserType {
   id: number,
@@ -109,7 +76,7 @@ const SignUpController = async (req: any, res: Response): Promise<any> => {
   try {
     const { email, password, name, googleToken, googleLogin } = req.body;
     console.log(googleToken);
-    
+
     let userData: UserType
     if (googleLogin) {
       userData = await googleLogin(googleToken) as UserType
