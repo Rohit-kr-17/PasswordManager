@@ -7,14 +7,6 @@ import PasswordRouter from "./routes/password.routes";
 import axios from "axios";
 const app = express();
 
-const pingBackend = async () => {
-  try {
-    await axios.get(process.env.PROD_URL || "http://localhost:8000");
-  } catch (error) {
-    console.error("Error pinging backend:", error);
-  }
-};
-setInterval(pingBackend, 50000);
 
 app.use(express.json());
 app.set("trust proxy", 1);
