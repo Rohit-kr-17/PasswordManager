@@ -33,4 +33,4 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-image:latest
 
       - name: Output Image Name
-        run: echo "Docker Image Pushed: ${{ secrets.DOCKER_USERNAME }}/my-image:latest"
+        run: echo "Docker Image Pushed"
