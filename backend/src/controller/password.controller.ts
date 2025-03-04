@@ -136,10 +136,46 @@ const sharePassword = async (req: any, res: Response) => {
     res.status(500).json("Internal server error");
   }
 };
+
+const searchPassword = async (req: any, res: Response) => {
+  try {
+    const { search } = req.query;
+    const id = req.user.id;
+    search.toString();
+    const contents = await prisma.post.findMany({
+      where: {
+        ownerId: id,
+        OR: [
+          {
+            title: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+          {
+            username: {
+              contains: search,
+              mode: "insensitive",
+            }
+          }
+        ],
+      },
+      orderBy: { createdAt: "asc" },
+    });
+    await Promise.all(contents.map(async e => {
+      e.content = await cryptr.decrypt(e.content as string)
+    }));
+    res.status(200).json(contents)
+  } catch (err) {
+    console.log(err);
+    res.status(500).json("Internal server error");
+  }
+}
 export {
   getAll,
   createPassword,
   modifyPassword,
   deletePassword,
   sharePassword,
+  searchPassword,
 };

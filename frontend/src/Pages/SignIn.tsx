@@ -12,6 +12,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { firebaseConfig } from "../firebase";
 import { FcGoogle } from "react-icons/fc";
+import { ImSpinner3 } from "react-icons/im";
 
 initializeApp(firebaseConfig);
 const provider = new GoogleAuthProvider();
@@ -23,20 +24,21 @@ const SignIn = () => {
     token: "",
     googleLogin: false,
   });
-  const setLoading = useSetRecoilState(Loading);
+  const [loading, setLoading] = useRecoilState(Loading);
   const setUser = useSetRecoilState(userAtom);
   const [auth, setAuth] = useRecoilState(authenticated);
   const navigate = useNavigate();
 
   const handleGoogleSignIn = async () => {
     try {
-      setLoading(true);
+      setLoading({ ...loading, googleLoading: true });
       const result = await signInWithPopup(gAuth, provider);
       const token = await result.user.getIdToken();
-      signIn("", "",token, true);
-      console.log("User Info:", result.user);
+      signIn("", "", token, true);
+      setLoading({ ...loading, googleLoading: false });
     } catch (error) {
-      console.error("Error during sign-in:", error);
+      setLoading({ ...loading, googleLoading: false });
+      toast.error("Error during sign-in");
     }
   };
 
@@ -67,7 +69,7 @@ const SignIn = () => {
   const signIn = async (
     email = formData.Email,
     password = formData.Password,
-    token=formData.token,
+    token = formData.token,
     googleLogin = formData.googleLogin
   ) => {
     try {
@@ -75,13 +77,13 @@ const SignIn = () => {
         navigate("/passwords", { replace: true });
         return;
       }
-      setLoading(true);
+      setLoading({ ...loading, passwordLoading: true });
       const response = await axios.post(
         apiUrl + "user/signIn",
         {
           email: email,
           password: password,
-          googleToken:token,
+          googleToken: token,
           googleLogin: googleLogin,
         },
         {
@@ -92,13 +94,13 @@ const SignIn = () => {
         }
       );
       setAuth(true);
-      setLoading(false);
+      setLoading({ ...loading, passwordLoading: false });
       const { id, name, uuid } = response.data;
       setUser({ email, name, id, uuid });
       toast.success("You are logged in.", { autoClose: 3000 });
       navigate("/passwords", { replace: true });
     } catch (err) {
-      setLoading(false);
+      setLoading({ ...loading, passwordLoading: false });
       toast.error("Invalid Credentials");
       setAuth(false);
       navigate("/sign-in");
@@ -124,14 +126,34 @@ const SignIn = () => {
           onChange={handleChange}
           onKeyDown={handleKeyDown}
         />
-        <Button onClick={handleClick} tag="Submit" />
+        <Button
+          onClick={handleClick}
+          tag={
+            loading.passwordLoading ? (
+              <span>
+                <ImSpinner3 className="animate-spin text-white" />
+              </span>
+            ) : (
+              "Submit"
+            )
+          }
+        />
         <div className="flex justify-center items-center">
-          <button
+          <Button
             className="flex  items-center justify-center w-full border-2 p-2 rounded-md  border-[#7091E6] mt-2"
             onClick={handleGoogleSignIn}
-          >
-            <FcGoogle className="text-xl mr-1" /> Sign In with Google
-          </button>
+            tag={
+              loading.googleLoading ? (
+                <span>
+                  <ImSpinner3 className="animate-spin text-blue-600" />
+                </span>
+              ) : (
+                <span className="flex items-center">
+                  <FcGoogle className="text-xl mr-1" /> Sign In with Google
+                </span>
+              )
+            }
+          ></Button>
         </div>
       </Box>
     </div>
