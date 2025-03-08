@@ -1,8 +1,23 @@
 import { Response } from "express";
 import { prisma } from "../db/db";
 import Cryptr from "cryptr";
+import { Cloudinary } from "../utils/Cloudinary";
 
 const cryptr = new Cryptr(process.env.CRYPTR_SECRET as string);
+const uploadFile = async (file: any) => {
+  try {
+    const uploadResult = await Cloudinary.uploader.upload(file.path, {
+      public_id: `${file.originalname}}`,
+      resource_type: "raw",
+    });
+
+    const fileUrl = uploadResult.url;
+    return fileUrl
+
+  } catch (error) {
+    return "Internal Server error"
+  }
+}
 const getAll = async (req: any, res: Response) => {
   try {
     const id = req.user.id;
@@ -26,12 +41,21 @@ const getAll = async (req: any, res: Response) => {
 const createPassword = async (req: any, res: Response) => {
   try {
     const { title, content, username } = req.body;
+    const { file } = req
+    let fileUrl: string = "";
+    let uploadResult
+    if (file) {
+      await uploadFile(file).then((result) => {
+        fileUrl = result
+      })
+    }
     const encryptPass = cryptr.encrypt(content);
     await prisma.post.create({
       data: {
         title: title,
         content: encryptPass,
         username: username,
+        file: fileUrl,
         ownerId: req.user.id,
       },
     });
