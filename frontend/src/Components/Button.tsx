@@ -4,7 +4,7 @@ const Button = ({ tag, className, ...rest }: any) => {
   const loading = useRecoilValue(Loading);
   return (
     <button
-      disabled={loading.googleLoading || loading.passwordLoading}
+      disabled={loading.googleLoading || loading.passwordLoading || loading.createPasswordLoading}
       className={` ${
         className
           ? className

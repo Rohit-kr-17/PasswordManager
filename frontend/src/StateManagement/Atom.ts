@@ -8,6 +8,8 @@ interface User {
 interface LoadingState {
   googleLoading: boolean;
   passwordLoading: boolean;
+  createPasswordLoading: boolean;
+  fetchPassword: boolean
 }
 
 interface Password {
@@ -50,6 +52,8 @@ export const Loading = atom<LoadingState>({
   default: {
     googleLoading: false,
     passwordLoading: false,
+    createPasswordLoading: false,
+    fetchPassword: false
   },
 });
 

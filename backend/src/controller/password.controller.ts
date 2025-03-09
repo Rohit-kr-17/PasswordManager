@@ -4,28 +4,50 @@ import Cryptr from "cryptr";
 import { Cloudinary } from "../utils/Cloudinary";
 
 const cryptr = new Cryptr(process.env.CRYPTR_SECRET as string);
-const uploadFile = async (file: any) => {
+const uploadFile = async (file: any, id: any) => {
   try {
+    console.log(file);
     const uploadResult = await Cloudinary.uploader.upload(file.path, {
-      public_id: `${file.originalname}}`,
+      public_id: `PasswordManager/${id}/${file.originalname}`,
       resource_type: "raw",
+      timeout: 120000
     });
 
-    const fileUrl = uploadResult.url;
-    return fileUrl
+    const fileUrl = uploadResult.secure_url;
+    return {
+      status: "success",
+      url: fileUrl,
+    }
 
   } catch (error) {
-    return "Internal Server error"
+    return {
+      status: "error",
+      message: error,
+    }
+  }
+}
+const deleteFile = async (fileUrl: string) => {
+  try {
+    console.log(fileUrl);
+    const publicId = fileUrl.split("/");
+    console.log(publicId);
+
+    // await Cloudinary.uploader.destroy(publicId);
+  } catch (err) {
+    console.log(err)
   }
 }
 const getAll = async (req: any, res: Response) => {
   try {
     const id = req.user.id;
+    const skip = req.query.skip ? parseInt(req.query.skip) : 1;
     const contents = await prisma.post.findMany({
       where: {
         ownerId: id,
       },
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      skip: (skip - 1) * 10,
     });
     await Promise.all(contents.map(async e => {
       e.content = await cryptr.decrypt(e.content as string)
@@ -38,17 +60,26 @@ const getAll = async (req: any, res: Response) => {
   }
 };
 
-const createPassword = async (req: any, res: Response) => {
+const createPassword = async (req: any, res: any) => {
   try {
     const { title, content, username } = req.body;
     const { file } = req
     let fileUrl: string = "";
-    let uploadResult
-    if (file) {
-      await uploadFile(file).then((result) => {
-        fileUrl = result
-      })
-    }
+    // if (file) {
+    //   try {
+    //     const result = await uploadFile(req.file, req.user.id);
+
+    //     if (result.status === "success") {
+    //       fileUrl = result.url as string;
+    //     } else {
+    //       console.log("❌ File Upload Error:", result.message);
+    //       return res.json({ message: result.message });
+    //     }
+    //   } catch (error) {
+    //     console.error("❌ Upload Failed:", error);
+    //     return res.json({ message: "File upload failed" });
+    //   }
+    // }
     const encryptPass = cryptr.encrypt(content);
     await prisma.post.create({
       data: {
@@ -110,6 +141,9 @@ const deletePassword = async (req: any, res: Response) => {
     if (!post) {
       res.status(404).json({ message: "Invalid any" });
       return;
+    }
+    if (post.file) {
+      await deleteFile(post.file)
     }
     await prisma.post.delete({
       where: {

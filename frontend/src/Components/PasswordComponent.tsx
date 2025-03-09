@@ -4,6 +4,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useState } from "react";
 import { MdDelete } from "react-icons/md";
 import axios from "axios";
+import { FaDownload } from "react-icons/fa6";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   createPassword,
@@ -28,7 +29,10 @@ export const PasswordComponent: React.FC<PasswordComponentProps> = ({
   content,
   username,
   id,
+  file,
 }) => {
+  console.log(file);
+
   const [toggleBorder, setToggleBorder] = useState(false);
   const [toggleVisiblity, SetToggleVisiblity] = useState(false);
   const [password, setPassword] = useRecoilState(passwordsAtom);
@@ -125,16 +129,28 @@ export const PasswordComponent: React.FC<PasswordComponentProps> = ({
             </div>
           </div>
         </AccordionDetails>
-        <div className="flex justify-end p-5">
-          <button className="text-2xl pr-2" onClick={updatePassword}>
-            <CiEdit />
-          </button>
-          <button
-            onClick={deletePassword}
-            className="text-red-500 text-2xl hover:underline"
-          >
-            <MdDelete />
-          </button>
+
+        <div className="flex items-center justify-between p-5">
+          <div>
+            {file && (
+              <a href={file} download="hello">
+                <button>
+                  <FaDownload />
+                </button>
+              </a>
+            )}
+          </div>
+          <div>
+            <button className="text-2xl pr-2" onClick={updatePassword}>
+              <CiEdit />
+            </button>
+            <button
+              onClick={deletePassword}
+              className="text-red-500 text-2xl hover:underline"
+            >
+              <MdDelete />
+            </button>
+          </div>
         </div>
       </Accordion>
     </div>
