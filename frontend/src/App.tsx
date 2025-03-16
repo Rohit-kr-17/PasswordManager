@@ -15,23 +15,23 @@ function App() {
   const [auth, setAuth] = useRecoilState(authenticated);
   const navigate = useNavigate();
   const setUser = useSetRecoilState(userAtom);
-  const setLoading = useSetRecoilState(Loading);
+  const [loading, setLoading] = useRecoilState(Loading);
 
   useEffect(() => {
     const checkAuthenticated = async () => {
       try {
-        setLoading(true);
+        setLoading({ ...loading, passwordLoading: true });
         const response = await axios.get(apiUrl + "user/isAuth", {
           withCredentials: true,
         });
-        setLoading(false);
+        setLoading({ ...loading, passwordLoading: false });
         if (response.status === 200) {
           setAuth(true);
           const { email, id, name, uuid } = response.data;
           setUser({ email, name, id, uuid });
         }
       } catch (error) {
-        setLoading(false);
+        setLoading({...loading, passwordLoading: false});
         navigate("/sign-in", { replace: true });
         setAuth(false);
       }

@@ -11,10 +11,11 @@ import {
 import { useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { ImSpinner3 } from "react-icons/im";
 
 export const PasswordForm = () => {
   const setVisiblity = useSetRecoilState(createPassword);
-  const setLoading = useSetRecoilState(Loading);
+  const [loading, setLoading] = useRecoilState(Loading);
   const setPasswordList = useSetRecoilState(passwordsAtom);
   const [modifyPass, setModifyPass] = useRecoilState(ModifyPasswordState);
   const { id, title, content, username, modifyPassword } = modifyPass;
@@ -22,6 +23,7 @@ export const PasswordForm = () => {
     title: modifyPassword ? title : "",
     username: modifyPassword ? username : "",
     content: modifyPassword ? content : "",
+    file: null,
   });
 
   const handleVisiblity = () => {
@@ -29,15 +31,22 @@ export const PasswordForm = () => {
       ...prevData,
       modifyPassword: false,
     }));
-    setVisiblity(false);
+    if (loading.createPasswordLoading == false) setVisiblity(false);
   };
   const handleChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = target;
+    if (target.files) console.log(target.files[0]);
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
+  // const handleUpload = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
+  //   setFormData((prevData: any) => ({
+  //     ...prevData,
+  //     file: target.files![0],
+  //   }));
+  // };
 
   const handleClick = async () => {
     if (modifyPassword) {
@@ -63,54 +72,60 @@ export const PasswordForm = () => {
           withCredentials: true,
         }
       );
-      setPasswordList((prevList) =>
-        prevList?.map((item) =>
+      setPasswordList((prevList: any) =>
+        prevList?.map((item: any) =>
           item.id === id ? { ...item, ...formData } : item
         )
       );
-      setLoading(false);
+      // setLoading(false);
       handleVisiblity();
       toast.success("Password added");
     } catch (err) {
-      setLoading(false);
+      // setLoading(false);
       toast.error("Internal server error");
     }
   };
   const addPassword = async () => {
-    setLoading(true);
+    setLoading({ ...loading, createPasswordLoading: true });
     try {
-      await axios.post(
+      if(!formData.title || !formData.content || !formData.username){
+        toast.error("Please fill all the fields");
+        setLoading({ ...loading, createPasswordLoading: false });
+        return
+      }
+      const res = await axios.post(
         apiUrl + "password/create",
         {
-          title: formData.title,
-          content: formData.content,
-          username: formData.username,
+          title: formData.title.trim(),
+          content: formData.content.trim(),
+          username: formData.username.trim(),
+          
         },
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "multipart/form-data" },
           withCredentials: true,
         }
       );
-      setLoading(false);
+      setPasswordList((passwords) => [ res.data.newPost,...passwords]);
+      setLoading({ ...loading, createPasswordLoading: false });
       handleVisiblity();
-      toast.success("Password added");
+      if (loading.createPasswordLoading == false)
+        toast.success("Password added");
     } catch (err) {
-      setLoading(false);
+      setLoading({ ...loading, createPasswordLoading: false });
       toast.error("Internal server error");
     }
   };
 
   return (
     <div className="fixed z-10 inset-0 bg-gray-500 bg-opacity-30 backdrop-blur-sm flex items-center justify-center">
-      <div className="relative p-2 bg-white rounded w-[25rem] h-[30rem] overflow-auto">
+      <div className="relative p-5 bg-white rounded w-auto  h-auto overflow-auto">
         <div className="flex ">
           <div className="items-center justify-center flex mt-5 mb-5 flex-1 text-2xl font-bold">
             {modifyPassword ? "Update Password" : "Create Password"}
           </div>
           <button
-            className="absolute mr-2 mt-0 right-0  rounded-md text-gray-400"
+            className="absolute mr-5 mt-0 right-0  rounded-md text-gray-400"
             onClick={handleVisiblity}
           >
             X
@@ -141,7 +156,19 @@ export const PasswordForm = () => {
             placeholder="Enter Password"
             onChange={handleChange}
           />
-          <Button tag="Save" onClick={handleClick}></Button>
+
+          <Button
+            tag={
+              loading.createPasswordLoading ? (
+                <span>
+                  <ImSpinner3 className="animate-spin text-white" />
+                </span>
+              ) : (
+                "Save"
+              )
+            }
+            onClick={handleClick}
+          ></Button>
         </div>
       </div>
     </div>

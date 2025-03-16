@@ -3,7 +3,7 @@ import { Box } from "../Components/Box";
 import Button from "../Components/Button";
 import Input from "../Components/Input";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { authenticated, userAtom } from "../StateManagement/Atom";
+import { authenticated, Loading, userAtom } from "../StateManagement/Atom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -11,6 +11,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { firebaseConfig } from "../firebase";
 import { FcGoogle } from "react-icons/fc";
+import { ImSpinner3 } from "react-icons/im";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 // Initialize Firebase outside the component to avoid re-initialization
@@ -29,14 +30,16 @@ const SignUp = () => {
   });
   const [auth, setAuth] = useRecoilState(authenticated);
   const setUser = useSetRecoilState(userAtom);
-
+  const [loading, setLoading] = useRecoilState(Loading);
   const handleGoogleSignIn = async () => {
     try {
+      setLoading({ ...loading, googleLoading: true });
       const result = await signInWithPopup(gAuth, provider);
       const token = await result.user.getIdToken();
       await signUp("", "", "", true, token);
+      setLoading({ ...loading, googleLoading: false });
     } catch (error) {
-      console.error("Error during Google sign-in:", error);
+      setLoading({ ...loading, googleLoading: false });
       toast.error("Failed to sign in with Google.");
     }
   };
@@ -70,6 +73,7 @@ const SignUp = () => {
     }
 
     try {
+      setLoading({ ...loading, passwordLoading: true });
       const response = await axios.post(
         `${apiUrl}user/signUp`,
         {
@@ -86,12 +90,13 @@ const SignUp = () => {
           withCredentials: true,
         }
       );
-
+      setLoading({ ...loading, passwordLoading: false });
       const { id, email, uuid, name } = response.data;
       setUser({ id, email, uuid, name });
       toast.success("User created successfully");
       setAuth(true);
     } catch (err: any) {
+      setLoading({ ...loading, passwordLoading: false });
       if (err.response?.status === 409) {
         toast.error("User already exists");
       } else if (err.response?.status === 400) {
@@ -129,12 +134,21 @@ const SignUp = () => {
         />
         <Button onClick={() => handleClick()} tag="Submit" />
         <div className="flex justify-center items-center">
-          <button
-            className="flex items-center justify-center w-full border-2 p-2 rounded-md border-[#7091E6] mt-2"
+          <Button
+            className="flex  items-center justify-center w-full border-2 p-2 rounded-md  border-[#7091E6] mt-2"
             onClick={handleGoogleSignIn}
-          >
-            <FcGoogle className="text-xl mr-1" /> Sign In with Google
-          </button>
+            tag={
+              loading ? (
+                <span>
+                  <ImSpinner3 className="animate-spin text-blue-600" />
+                </span>
+              ) : (
+                <span className="flex items-center">
+                  <FcGoogle className="text-xl mr-1" /> Sign In with Google
+                </span>
+              )
+            }
+          ></Button>
         </div>
       </Box>
     </div>

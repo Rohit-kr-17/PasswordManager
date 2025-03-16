@@ -5,6 +5,12 @@ interface User {
   email: string;
   uuid: string;
 }
+interface LoadingState {
+  googleLoading: boolean;
+  passwordLoading: boolean;
+  createPasswordLoading: boolean;
+  fetchPassword: boolean
+}
 
 interface Password {
   id: number;
@@ -41,9 +47,14 @@ export const createPassword = atom<boolean>({
   default: false,
 });
 
-export const Loading = atom<boolean>({
+export const Loading = atom<LoadingState>({
   key: "loading",
-  default: false,
+  default: {
+    googleLoading: false,
+    passwordLoading: false,
+    createPasswordLoading: false,
+    fetchPassword: false
+  },
 });
 
 export const ModifyPasswordState = atom<ModifyPassword>({
