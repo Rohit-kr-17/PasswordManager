@@ -16,6 +16,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     script {
                         sh '''
+                            sudo su
                             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                             cd backend
                             docker build -t pm-backend .
@@ -30,8 +31,11 @@ pipeline {
             steps {
                 sshagent(credentials: ['EC2_credential']) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ec2-user@65.0.122.237 
-                        echo Hello
+                        ssh -o StrictHostKeyChecking=no ec2-user@65.0.122.237
+                        sudo docker stop pm-backend
+                        sudo docker rm pm-backend
+                        sudo docker rmi znxare/pm-backend:latest
+                        sudo docker pull znxare/pm-backend:latest
                     """
                 }
             }
