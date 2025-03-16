@@ -31,8 +31,6 @@ export const PasswordComponent: React.FC<PasswordComponentProps> = ({
   id,
   file,
 }) => {
-  console.log(file);
-
   const [toggleBorder, setToggleBorder] = useState(false);
   const [toggleVisiblity, SetToggleVisiblity] = useState(false);
   const [password, setPassword] = useRecoilState(passwordsAtom);
@@ -73,7 +71,7 @@ export const PasswordComponent: React.FC<PasswordComponentProps> = ({
   };
 
   return (
-    <div className="m-5">
+    <div className="mt-5">
       <Accordion className="w-[300px] md:w-[500px]">
         <AccordionSummary
           expandIcon={<ExpandMore />}

@@ -2,13 +2,14 @@ import { Response } from "express";
 import { prisma } from "../db/db";
 import Cryptr from "cryptr";
 import { Cloudinary } from "../utils/Cloudinary";
+import { v4 as uuidv4 } from "uuid";
 
 const cryptr = new Cryptr(process.env.CRYPTR_SECRET as string);
 const uploadFile = async (file: any, id: any) => {
   try {
     console.log(file);
     const uploadResult = await Cloudinary.uploader.upload(file.path, {
-      public_id: `PasswordManager/${id}/${file.originalname}`,
+      public_id: uuidv4(),
       resource_type: "raw",
       timeout: 120000
     });
@@ -52,8 +53,10 @@ const getAll = async (req: any, res: Response) => {
     await Promise.all(contents.map(async e => {
       e.content = await cryptr.decrypt(e.content as string)
     }));
-
-    res.status(200).json(contents);
+    const total = await prisma.post.count({
+      where: { ownerId: id }
+    })
+    res.status(200).json({ contents, hasmore: total > skip * 10 ? true : false });
   } catch (err) {
     console.error("Error fetching passwords:", err);
     res.status(500).json({ message: "Internal server error" });
@@ -65,23 +68,23 @@ const createPassword = async (req: any, res: any) => {
     const { title, content, username } = req.body;
     const { file } = req
     let fileUrl: string = "";
-    // if (file) {
-    //   try {
-    //     const result = await uploadFile(req.file, req.user.id);
+    if (file) {
+      try {
+        const result = await uploadFile(req.file, req.user.id);
 
-    //     if (result.status === "success") {
-    //       fileUrl = result.url as string;
-    //     } else {
-    //       console.log("❌ File Upload Error:", result.message);
-    //       return res.json({ message: result.message });
-    //     }
-    //   } catch (error) {
-    //     console.error("❌ Upload Failed:", error);
-    //     return res.json({ message: "File upload failed" });
-    //   }
-    // }
+        if (result.status === "success") {
+          fileUrl = result.url as string;
+        } else {
+          console.log(" File Upload Error:", result.message);
+          return res.json({ message: result.message });
+        }
+      } catch (error) {
+        console.error(" Upload Failed:", error);
+        return res.json({ message: "File upload failed" });
+      }
+    }
     const encryptPass = cryptr.encrypt(content);
-    await prisma.post.create({
+    const newPost = await prisma.post.create({
       data: {
         title: title,
         content: encryptPass,
@@ -91,7 +94,7 @@ const createPassword = async (req: any, res: any) => {
       },
     });
     res.json({
-      message: "Password added successfully",
+      message: "Password added successfully", newPost
     });
   } catch (err) {
     throw "Internal server error";

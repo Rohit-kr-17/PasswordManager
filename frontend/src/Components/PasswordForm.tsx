@@ -88,12 +88,17 @@ export const PasswordForm = () => {
   const addPassword = async () => {
     setLoading({ ...loading, createPasswordLoading: true });
     try {
-      await axios.post(
+      if(!formData.title || !formData.content || !formData.username){
+        toast.error("Please fill all the fields");
+        setLoading({ ...loading, createPasswordLoading: false });
+        return
+      }
+      const res = await axios.post(
         apiUrl + "password/create",
         {
-          title: formData.title,
-          content: formData.content,
-          username: formData.username,
+          title: formData.title.trim(),
+          content: formData.content.trim(),
+          username: formData.username.trim(),
           file: formData.file,
         },
         {
@@ -101,6 +106,7 @@ export const PasswordForm = () => {
           withCredentials: true,
         }
       );
+      setPasswordList((passwords) => [ res.data.newPost,...passwords]);
       setLoading({ ...loading, createPasswordLoading: false });
       handleVisiblity();
       if (loading.createPasswordLoading == false)
