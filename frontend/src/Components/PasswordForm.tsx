@@ -41,12 +41,12 @@ export const PasswordForm = () => {
       [name]: value,
     }));
   };
-  const handleUpload = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prevData: any) => ({
-      ...prevData,
-      file: target.files![0],
-    }));
-  };
+  // const handleUpload = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
+  //   setFormData((prevData: any) => ({
+  //     ...prevData,
+  //     file: target.files![0],
+  //   }));
+  // };
 
   const handleClick = async () => {
     if (modifyPassword) {
@@ -99,7 +99,7 @@ export const PasswordForm = () => {
           title: formData.title.trim(),
           content: formData.content.trim(),
           username: formData.username.trim(),
-          file: formData.file,
+          
         },
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -156,7 +156,6 @@ export const PasswordForm = () => {
             placeholder="Enter Password"
             onChange={handleChange}
           />
-          <Input label="File" type="file" name="file" onChange={handleUpload} />
 
           <Button
             tag={
