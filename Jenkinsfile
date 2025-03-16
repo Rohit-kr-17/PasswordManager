@@ -1,6 +1,7 @@
 pipeline {
     agent { label 'docker-agent' }
 
+
     environment {
         DOCKER_CREDENTIALS_ID = 'docker-credentials'
     }
@@ -25,20 +26,4 @@ pipeline {
                         '''
                     }
                 }
-            }
-        }
-        stage('Deploy to EC2') {
-            steps {
-                sshagent(credentials: ['EC2_credential']) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ec2-user@65.0.122.237
-                        sudo docker stop pm-backend
-                        sudo docker rm pm-backend
-                        sudo docker rmi znxare/pm-backend:latest
-                        sudo docker pull znxare/pm-backend:latest
-                    """
-                }
-            }
-        }
-    }
 }
