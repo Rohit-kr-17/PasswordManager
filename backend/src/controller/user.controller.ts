@@ -194,7 +194,11 @@ const isAuthenticated = (req: any, res: Response) => {
 
 const logout = (req: any, res: Response) => {
   try {
-    res.clearCookie("token");
+    res.clearCookie("token", {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
     res.status(200).json({ message: "Logged out" });
   } catch (err) {
     console.log(err);

@@ -138,7 +138,7 @@ const SignUp = () => {
             className="flex  items-center justify-center w-full border-2 p-2 rounded-md  border-[#7091E6] mt-2"
             onClick={handleGoogleSignIn}
             tag={
-              loading ? (
+              loading.googleLoading ? (
                 <span>
                   <ImSpinner3 className="animate-spin text-blue-600" />
                 </span>

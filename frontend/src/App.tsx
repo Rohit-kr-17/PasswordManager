@@ -13,7 +13,6 @@ import Profile from "./Pages/Profile";
 
 function App() {
   const [auth, setAuth] = useRecoilState(authenticated);
-  const navigate = useNavigate();
   const setUser = useSetRecoilState(userAtom);
   const [loading, setLoading] = useRecoilState(Loading);
 
@@ -31,36 +30,47 @@ function App() {
           setUser({ email, name, id, uuid });
         }
       } catch (error) {
-        setLoading({...loading, passwordLoading: false});
-        navigate("/sign-in", { replace: true });
+        setLoading({ ...loading, passwordLoading: false });
         setAuth(false);
       }
     };
     checkAuthenticated();
   }, [setAuth, setUser]);
-
-  return (
-    <>
-      <Header />
-      <Routes>
-        <Route
-          path="/"
-          element={
-            auth ? (
-              <Navigate to="/passwords" replace />
-            ) : (
-              <Navigate to="/sign-in" replace />
-            )
-          }
-        />
-        <Route path="/passwords" element={<Passwords />} />
-        <Route path="/sign-in" element={<SignIn />} />
-        <Route path="/sign-up" element={<SignUp />} />
-        <Route path="/profile/:id" element={<Profile />} />
-        <Route path="/*" element={<ErrorPage />} />
-      </Routes>
-    </>
-  );
+  if (auth) {
+    return (
+      <>
+        <Header />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              auth ? (
+                <Navigate to="/passwords" replace />
+              ) : (
+                <Navigate to="/sign-in" replace />
+              )
+            }
+          />
+          <Route path="/passwords" element={<Passwords />} />
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/*" element={<ErrorPage />} />
+        </Routes>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <Header />
+        <Routes>
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/*" element={<Navigate to="/sign-in" replace />} />
+        </Routes>
+      </>
+    );
+  }
 }
 
 export default App;
