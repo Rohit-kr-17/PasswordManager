@@ -52,7 +52,6 @@ pipeline {
                         sudo docker kill pm-backend || true
                         sudo docker rm pm-backend || true
                         sudo docker run -d --name pm-backend -p 8000:8000 -e PORT=$PORT -e DATABASE_URL=$DATABASE_URL -e JWT_SECRET=$JWT_SECRET -e CRYPTR_SECRET=$CRYPTR_SECRET -e AWS_REGION=$AWS_REGION -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY znxare/pm-backend:latest
-                        EOF
                     """
                 }
             }
