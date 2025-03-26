@@ -1,6 +1,8 @@
 pipeline {
     agent { label 'docker-agent' }
-
+    triggers {
+            githubPush()  // Triggers on GitHub PR merge
+        }
     stages {
         stage('Check Backend Changes or Merge to Main') {
             steps {
